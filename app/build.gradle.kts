@@ -55,6 +55,9 @@ kapt {
 }
 
 dependencies {
+    implementation(projects.data)
+    implementation(projects.domain)
+
     implementation(libs.core)
     implementation(libs.lifecycle.runtime)
 
@@ -62,7 +65,6 @@ dependencies {
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
 
-    // Choose one of the following:
     implementation(libs.bundles.compose)
     implementation(libs.compose.activity)
     implementation(libs.compose.viewmodel)
