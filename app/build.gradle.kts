@@ -67,6 +67,7 @@ dependencies {
 
     implementation(libs.bundles.compose)
     implementation(libs.compose.activity)
+    implementation(libs.compose.lifecycle)
     implementation(libs.compose.viewmodel)
     implementation(libs.compose.livedata)
     implementation(libs.compose.navigation)
@@ -85,6 +86,9 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
+
+    //datastore
+    implementation(libs.datastore)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.integration)

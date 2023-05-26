@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Consumrz</string>
+    <string name="common_error_message">Something went wrong</string>
+
+    <string name="welcome_to_app">Welcome to App</string>
+    <string name="email">email</string>
+    <string name="your_email">your email</string>
+    <string name="password">password</string>
+    <string name="your_password">your password</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="register">Register</string>
+    <string name="privacy">Privacy</string>
+
+    <string name="email_empty">Email cannot be empty</string>
+    <string name="password_empty">Password cannot be empty</string>
+    <string name="email_password_empty">Email and Password cannot be empty</string>
+
 </resources>
