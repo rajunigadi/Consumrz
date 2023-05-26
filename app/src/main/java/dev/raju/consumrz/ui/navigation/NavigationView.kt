@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.raju.consumrz.ui.screens.login.LoginScreen
+import dev.raju.consumrz.ui.screens.register.RegisterScreen
 import dev.raju.consumrz.ui.screens.splash.SplashScreen
 
 /**
@@ -56,7 +57,7 @@ fun LoginScreen(navController: NavHostController) {
     }
 }*/
 
-@Composable
+/*@Composable
 fun RegisterScreen(navController: NavHostController) {
     Column(
         Modifier.fillMaxSize(),
@@ -69,7 +70,7 @@ fun RegisterScreen(navController: NavHostController) {
             Text("Login")
         }
     }
-}
+}*/
 
 @Composable
 fun PostsScreen(navController: NavHostController) {

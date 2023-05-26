@@ -1,9 +1,8 @@
-package dev.raju.consumrz.ui.screens.login
+package dev.raju.consumrz.ui.screens.register
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -32,13 +31,13 @@ import dev.raju.consumrz.ui.theme.ConsumrzTheme
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    LoginComponent(
-        onLoginClick = { email, password ->
+    RegisterComponent(
+        onRegisterClick = { email, password, repeatPassword ->
             println("email: $email and password: $password")
             if (email.isEmpty() and password.isNotEmpty()) {
                 Toast.makeText(context, R.string.email_empty, Toast.LENGTH_SHORT).show()
@@ -49,29 +48,30 @@ fun LoginScreen(
             if (email.isEmpty() and password.isEmpty()) {
                 Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
             }
+            if (password.isEmpty() and repeatPassword.isEmpty()) {
+                //Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
+            }
+            if (password != repeatPassword) {
+                //Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
+            }
             if (email.isNotEmpty() and password.isNotEmpty()) {
-                viewModel.signIn(email, password)
+                viewModel.register(email, password)
             }
         },
-        onRegisterClick = {
-            navController.navigate(NavRoute.Register.path)
-        },
-        onForgotPasswordClick = {
-            navController.navigate(NavRoute.Register.path)
-        },
-        onPrivacyClick = {
-            navController.navigate(NavRoute.Register.path)
+        onLoginClick = {
+            navController.navigate(NavRoute.Login.path) {
+                popUpTo(NavRoute.Register.path) {
+                    inclusive = true
+                }
+            }
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LoginComponent(
-    onLoginClick: (email: String, password: String) -> Unit,
-    onRegisterClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
-    onPrivacyClick: () -> Unit,
+private fun RegisterComponent(
+    onRegisterClick: (email: String, password: String, repeatPassword: String) -> Unit,
+    onLoginClick: () -> Unit,
 ) {
     Column(
         Modifier
@@ -80,11 +80,12 @@ private fun LoginComponent(
 
         val email = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
+        val repeatPassword = remember { mutableStateOf(TextFieldValue()) }
 
         AppLogo()
 
         TextHeader(
-            label = stringResource(id = R.string.welcome_to_app),
+            label = stringResource(id = R.string.signing_up),
         )
 
         EmailComponent(onValueChange = {
@@ -95,33 +96,30 @@ private fun LoginComponent(
             password.value = it
         })
 
+        PasswordComponent(
+            label = stringResource(id = R.string.repeat_password),
+            placeholder = stringResource(id = R.string.your_repeat_password),
+            onValueChange = {
+                repeatPassword.value = it
+            })
+
         DefaultButton(
-            label = stringResource(id = R.string.login),
+            label = stringResource(id = R.string.register),
             onButtonClick = {
-                onLoginClick.invoke(email.value.text, password.value.text)
+                onRegisterClick.invoke(
+                    email.value.text,
+                    password.value.text,
+                    repeatPassword.value.text
+                )
             }
         )
 
         DefaultSpacer(space = 16.dp)
 
         LinkText(
-            label = stringResource(id = R.string.register),
+            label = stringResource(id = R.string.already_have_account),
             onClickListener = {
-                onRegisterClick.invoke()
-            }
-        )
-
-        LinkText(
-            label = stringResource(id = R.string.forgot_password),
-            onClickListener = {
-                onForgotPasswordClick.invoke()
-            }
-        )
-
-        LinkText(
-            label = stringResource(id = R.string.privacy),
-            onClickListener = {
-                onPrivacyClick.invoke()
+                onLoginClick.invoke()
             }
         )
     }
@@ -135,17 +133,11 @@ fun GreetingPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LoginComponent(
-                onLoginClick = { email, password ->
+            RegisterComponent(
+                onRegisterClick = { email, password, repeatPassword ->
 
                 },
-                onRegisterClick = {
-
-                },
-                onForgotPasswordClick = {
-
-                },
-                onPrivacyClick = {
+                onLoginClick = {
 
                 }
             )

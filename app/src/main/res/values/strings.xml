@@ -16,4 +16,9 @@
     <string name="password_empty">Password cannot be empty</string>
     <string name="email_password_empty">Email and Password cannot be empty</string>
 
+    <string name="signing_up">Signing up</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="repeat_password">repeat password</string>
+    <string name="your_repeat_password">your repeat_password</string>
+
 </resources>
