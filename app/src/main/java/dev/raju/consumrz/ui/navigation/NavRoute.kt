@@ -71,6 +71,14 @@ interface NavRoute<T : RouteNavigator> {
                 navHostController.navigate(navigationState.route)
                 onNavigated(navigationState)
             }
+            is NavigationState.NavigateToRoutePopUpTo -> {
+                navHostController.navigate(navigationState.route) {
+                    popUpTo(navigationState.popToRoute) {
+                        inclusive = true
+                    }
+                }
+                onNavigated(navigationState)
+            }
             is NavigationState.PopToRoute -> {
                 navHostController.popBackStack(navigationState.staticRoute, false)
                 onNavigated(navigationState)

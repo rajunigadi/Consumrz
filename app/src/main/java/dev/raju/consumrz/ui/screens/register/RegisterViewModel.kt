@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -56,7 +55,10 @@ class RegisterViewModel @Inject constructor(
 
                         }
                         is ResponseCodable.Success -> {
-                            navigateToRoute(PostsRoute.route)
+                            navigateToRoutePopUpTo(
+                                route = PostsRoute.route,
+                                popUpToRoute = RegisterRoute.route
+                            )
                         }
                     }
                 }

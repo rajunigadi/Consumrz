@@ -23,11 +23,19 @@ class UserRepositoryImpl(
     }
 
     override suspend fun signIn(params: SignInParams): LoginState {
-        return LoginState(true)
+        val users = userDao.findUserByEmail(email = params.email)
+        return if(users?.isNotEmpty() == true && users[0].email == params.email) {
+            //datastoreRepository.putBoolean(KEY_LOGGED_IN, true)
+            LoginState(true)
+        } else {
+            //datastoreRepository.putBoolean(KEY_LOGGED_IN, false)
+            LoginState(false)
+        }
     }
 
     override suspend fun register(params: SignInParams): LoginState {
-        userDao.addUser(User(params.email, params.password))
-        return LoginState(true)
+        val rowId = userDao.addUser(User(email = params.email, password = params.password))
+        //datastoreRepository.putBoolean(KEY_LOGGED_IN, rowId > 0)
+        return LoginState(rowId > 0)
     }
 }

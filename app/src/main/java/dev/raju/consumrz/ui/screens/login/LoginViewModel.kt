@@ -32,7 +32,7 @@ class LoginViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
     private val useCase: UserUseCase
-): BaseViewModel(), RouteNavigator by routeNavigator {
+) : BaseViewModel(), RouteNavigator by routeNavigator {
 
     private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
     val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
@@ -52,14 +52,20 @@ class LoginViewModel @Inject constructor(
                         is ResponseCodable.Empty -> {
 
                         }
+
                         is ResponseCodable.Loading -> {
 
                         }
+
                         is ResponseCodable.Failure -> {
 
                         }
+
                         is ResponseCodable.Success -> {
-                            navigateToRoute(PostsRoute.route)
+                            navigateToRoutePopUpTo(
+                                route = PostsRoute.route,
+                                popUpToRoute = LoginRoute.route
+                            )
                         }
                     }
                 }

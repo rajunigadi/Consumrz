@@ -12,6 +12,7 @@ interface RouteNavigator {
     fun navigateUp()
     fun popToRoute(route: String)
     fun navigateToRoute(route: String)
+    fun navigateToRoutePopUpTo(route: String, popUpToRoute: String)
     val navigationState: StateFlow<NavigationState>
 }
 
@@ -35,6 +36,8 @@ class RouteNavigatorImpl : RouteNavigator {
     override fun navigateUp() = navigate(NavigationState.NavigateUp())
 
     override fun navigateToRoute(route: String) = navigate(NavigationState.NavigateToRoute(route))
+
+    override fun navigateToRoutePopUpTo(route: String, popUpToRoute: String) = navigate(NavigationState.NavigateToRoutePopUpTo(route, popUpToRoute))
 
     @VisibleForTesting
     fun navigate(state: NavigationState) {

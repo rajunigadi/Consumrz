@@ -30,7 +30,7 @@ class SplashViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
     private val useCase: UserUseCase
-): BaseViewModel(), RouteNavigator by routeNavigator {
+) : BaseViewModel(), RouteNavigator by routeNavigator {
 
     private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
     val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
@@ -49,21 +49,23 @@ class SplashViewModel @Inject constructor(
                         is ResponseCodable.Empty -> {
 
                         }
+
                         is ResponseCodable.Loading -> {
 
                         }
+
                         is ResponseCodable.Failure -> {
 
                         }
+
                         is ResponseCodable.Success -> {
-                            val path = if(loginState.data?.state == true) {
+                            val route = if (loginState.data?.state == true) {
                                 PostsRoute.route
                             } else {
                                 LoginRoute.route
                             }
-                            Log.d("aarna", "path: $path")
-                            delay(5000)
-                            navigateToRoute(path)
+                            Log.d("aarna", "route: $route")
+                            navigateToRoutePopUpTo(route = route, popUpToRoute = SplashRoute.route)
                         }
                     }
                 }
