@@ -5,6 +5,7 @@ import dev.raju.domain.enitities.SignInParams
 import dev.raju.domain.repositories.UserRepository
 import dev.raju.domain.utils.DispatcherProvider
 import dev.raju.domain.utils.ResponseCodable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -24,6 +25,7 @@ class UserUseCaseImpl(
 ) : UserUseCase {
     override suspend fun checkLogin(): Flow<ResponseCodable<LoginState>> {
         return flow {
+            emit(ResponseCodable.Loading)
             try {
                 emit(ResponseCodable.Success(repository.checkLogin()))
             } catch (e: Exception) {

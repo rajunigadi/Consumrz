@@ -7,6 +7,7 @@ import dev.raju.domain.enitities.SignInParams
 import dev.raju.domain.enitities.User
 import dev.raju.domain.repositories.DatastoreRepository
 import dev.raju.domain.repositories.UserRepository
+import kotlinx.coroutines.delay
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
@@ -17,6 +18,7 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     override suspend fun checkLogin(): LoginState {
+        delay(2000)
         return LoginState(datastoreRepository.getBoolean(KEY_LOGGED_IN).getOrDefault(false))
     }
 

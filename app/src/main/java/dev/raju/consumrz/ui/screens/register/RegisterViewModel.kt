@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.BaseViewModel
+import dev.raju.consumrz.ui.navigation.RouteNavigator
+import dev.raju.consumrz.ui.screens.posts.PostsRoute
 import dev.raju.domain.utils.ResponseCodable
 import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.enitities.SignInParams
@@ -24,9 +26,10 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
     private val useCase: UserUseCase
-): BaseViewModel() {
+): BaseViewModel(), RouteNavigator by routeNavigator {
 
     private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
     val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
@@ -42,7 +45,20 @@ class RegisterViewModel @Inject constructor(
                 }
                 .collect { loginState ->
                     println("aarna: loginState: $loginState")
-                    _uiState.value = loginState
+                    when (loginState) {
+                        is ResponseCodable.Empty -> {
+
+                        }
+                        is ResponseCodable.Loading -> {
+
+                        }
+                        is ResponseCodable.Failure -> {
+
+                        }
+                        is ResponseCodable.Success -> {
+                            navigateToRoute(PostsRoute.route)
+                        }
+                    }
                 }
         }
     }

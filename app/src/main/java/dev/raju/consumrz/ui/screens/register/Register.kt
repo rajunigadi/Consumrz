@@ -25,15 +25,28 @@ import dev.raju.consumrz.ui.components.LinkText
 import dev.raju.consumrz.ui.components.PasswordComponent
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
+import dev.raju.consumrz.ui.screens.login.LoginScreen
+import dev.raju.consumrz.ui.screens.login.LoginViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
+
+object RegisterRoute : NavRoute<RegisterViewModel> {
+
+    override val route = "register"
+
+    @Composable
+    override fun viewModel(): RegisterViewModel = hiltViewModel()
+
+    @Composable
+    override fun Content(viewModel: RegisterViewModel) = RegisterScreen(viewModel)
+}
+
 @Composable
 fun RegisterScreen(
-    navController: NavHostController,
-    viewModel: RegisterViewModel = hiltViewModel()
+    viewModel: RegisterViewModel
 ) {
     val context = LocalContext.current
     RegisterComponent(
@@ -59,11 +72,11 @@ fun RegisterScreen(
             }
         },
         onLoginClick = {
-            navController.navigate(NavRoute.Login.path) {
+            /*navController.navigate(NavRoute.Login.path) {
                 popUpTo(NavRoute.Register.path) {
                     inclusive = true
                 }
-            }
+            }*/
         }
     )
 }

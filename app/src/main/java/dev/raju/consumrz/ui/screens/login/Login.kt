@@ -16,7 +16,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import dev.raju.consumrz.R
 import dev.raju.consumrz.ui.components.AppLogo
 import dev.raju.consumrz.ui.components.DefaultButton
@@ -26,15 +25,28 @@ import dev.raju.consumrz.ui.components.LinkText
 import dev.raju.consumrz.ui.components.PasswordComponent
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
+import dev.raju.consumrz.ui.screens.posts.PostsRoute
+import dev.raju.consumrz.ui.screens.register.RegisterRoute
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
+
+object LoginRoute : NavRoute<LoginViewModel> {
+
+    override val route = "login"
+
+    @Composable
+    override fun viewModel(): LoginViewModel = hiltViewModel()
+
+    @Composable
+    override fun Content(viewModel: LoginViewModel) = LoginScreen(viewModel)
+}
+
 @Composable
 fun LoginScreen(
-    navController: NavHostController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel
 ) {
     val context = LocalContext.current
     LoginComponent(
@@ -54,18 +66,17 @@ fun LoginScreen(
             }
         },
         onRegisterClick = {
-            navController.navigate(NavRoute.Register.path)
+            viewModel.navigate(RegisterRoute.route)
         },
         onForgotPasswordClick = {
-            navController.navigate(NavRoute.Register.path)
+            viewModel.navigate(RegisterRoute.route)
         },
         onPrivacyClick = {
-            navController.navigate(NavRoute.Register.path)
+            viewModel.navigate(PostsRoute.route)
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginComponent(
     onLoginClick: (email: String, password: String) -> Unit,

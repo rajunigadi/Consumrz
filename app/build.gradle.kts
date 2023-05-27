@@ -75,8 +75,6 @@ dependencies {
     implementation(libs.compose.coil)
     implementation(libs.compose.lottie)
 
-    implementation(libs.bundles.compose.pager)
-
     // dagger hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

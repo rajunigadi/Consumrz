@@ -1,14 +1,19 @@
 package dev.raju.consumrz.ui.screens.login
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.BaseViewModel
+import dev.raju.consumrz.ui.navigation.RouteNavigator
+import dev.raju.consumrz.ui.screens.posts.PostsRoute
+import dev.raju.consumrz.ui.screens.register.RegisterRoute
 import dev.raju.domain.utils.ResponseCodable
 import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.enitities.SignInParams
 import dev.raju.domain.usecases.UserUseCase
 import dev.raju.domain.utils.DispatcherProvider
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
     private val useCase: UserUseCase
-): BaseViewModel() {
+): BaseViewModel(), RouteNavigator by routeNavigator {
 
     private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
     val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
@@ -42,8 +48,27 @@ class LoginViewModel @Inject constructor(
                 }
                 .collect { loginState ->
                     println("aarna: loginState: $loginState")
-                    _uiState.value = loginState
+                    when (loginState) {
+                        is ResponseCodable.Empty -> {
+
+                        }
+                        is ResponseCodable.Loading -> {
+
+                        }
+                        is ResponseCodable.Failure -> {
+
+                        }
+                        is ResponseCodable.Success -> {
+                            navigateToRoute(PostsRoute.route)
+                        }
+                    }
                 }
+        }
+    }
+
+    fun navigate(route: String) {
+        job = viewModelScope.launch(dispatcherProvider.io + exceptionHandler) {
+            navigateToRoute(route)
         }
     }
 }
