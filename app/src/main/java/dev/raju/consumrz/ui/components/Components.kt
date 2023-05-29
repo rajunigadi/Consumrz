@@ -85,7 +85,8 @@ fun TextHeader(
         text = label,
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
-        modifier = modifier
+        modifier = modifier,
+        maxLines = 1
     )
 }
 

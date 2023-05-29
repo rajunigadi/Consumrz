@@ -21,7 +21,7 @@ data class Post(
 @Entity(tableName = "comments")
 data class Comment(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     val postId: Int,
     val commentText: String
 )
@@ -33,6 +33,18 @@ data class PostParams(val title: String, val text: String) {
             val text by map
 
             val data = PostParams(title, text)
+        }.data
+    }
+}
+
+data class CommentParams(val text: String) {
+
+    var postId: Int = 0
+
+    companion object {
+        fun from(map: Map<String, String>) = object {
+            val text by map
+            val data = CommentParams(text)
         }.data
     }
 }

@@ -1,6 +1,5 @@
 package dev.raju.consumrz.ui.screens.login
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,7 @@ import dev.raju.consumrz.ui.components.DefaultSpacer
 import dev.raju.consumrz.ui.components.LinkText
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
-import dev.raju.consumrz.ui.screens.posts.PostsRoute
+import dev.raju.consumrz.ui.screens.posts.list.PostsRoute
 import dev.raju.consumrz.ui.screens.register.RegisterRoute
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.ui.validators.Email

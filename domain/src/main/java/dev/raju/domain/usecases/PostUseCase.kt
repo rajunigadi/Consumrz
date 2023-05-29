@@ -2,6 +2,7 @@ package dev.raju.domain.usecases
 
 import android.util.Log
 import dev.raju.domain.enitities.Comment
+import dev.raju.domain.enitities.CommentParams
 import dev.raju.domain.enitities.Post
 import dev.raju.domain.enitities.PostParams
 import dev.raju.domain.repositories.PostRepository
@@ -17,9 +18,10 @@ import kotlinx.coroutines.flow.flowOn
  */
 interface PostUseCase {
     suspend fun getPosts(): Flow<UiState<List<Post>>>
+    suspend fun getPost(id: Int): Flow<UiState<Post>>
     suspend fun addPost(postParams: PostParams): Flow<UiState<Unit>>
     suspend fun updatePost(post: Post): Flow<UiState<Unit>>
-    suspend fun addComment(comment: Comment): Flow<UiState<Unit>>
+    suspend fun addComment(commentParams: CommentParams): Flow<UiState<Unit>>
     suspend fun updateComment(comment: Comment): Flow<UiState<Unit>>
 }
 
@@ -33,6 +35,24 @@ class PostUseCaseImpl(
             emit(UiState.Loading)
             try {
                 val response = repository.getPosts()
+                if(response.data != null) {
+                    emit(UiState.Success(response.data))
+                } else if(!response.errors.isNullOrEmpty()) {
+                    emit(UiState.Failure(response.errors))
+                } else {
+                    emit(UiState.Failure(ErrorCodable.defaultErrors()))
+                }
+            } catch (e: Exception) {
+                emit(UiState.Failure(ErrorCodable.defaultErrors(e)))
+            }
+        }.flowOn(dispatcherProvider.io)
+    }
+
+    override suspend fun getPost(id: Int): Flow<UiState<Post>> {
+        return flow {
+            emit(UiState.Loading)
+            try {
+                val response = repository.getPost(id)
                 if(response.data != null) {
                     emit(UiState.Success(response.data))
                 } else if(!response.errors.isNullOrEmpty()) {
@@ -82,10 +102,10 @@ class PostUseCaseImpl(
         }.flowOn(dispatcherProvider.io)
     }
 
-    override suspend fun addComment(comment: Comment): Flow<UiState<Unit>> {
+    override suspend fun addComment(commentParams: CommentParams): Flow<UiState<Unit>> {
         return flow {
             try {
-                val response = repository.addComment(comment = comment)
+                val response = repository.addComment(commentParams = commentParams)
                 if(response.data != null) {
                     emit(UiState.Success(response.data))
                 } else if(!response.errors.isNullOrEmpty()) {

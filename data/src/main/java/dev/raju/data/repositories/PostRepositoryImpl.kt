@@ -3,6 +3,7 @@ package dev.raju.data.repositories
 import dev.raju.data.local.CommentDao
 import dev.raju.data.local.PostDao
 import dev.raju.domain.enitities.Comment
+import dev.raju.domain.enitities.CommentParams
 import dev.raju.domain.enitities.Post
 import dev.raju.domain.enitities.PostParams
 import dev.raju.domain.repositories.PostRepository
@@ -25,6 +26,36 @@ class PostRepositoryImpl(
                 post.comments = comments
             }
             ResponseCodable(data = posts)
+        } catch (e: Exception) {
+            ResponseCodable(
+                errors = arrayOf(
+                    ErrorCodable(
+                        errorCode = 100,
+                        errorMessage = "Something went wrong!"
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getPost(id: Int): ResponseCodable<Post> {
+        return try {
+            val posts = postDao.getPostById(id)
+            if(posts.isNullOrEmpty()) {
+                ResponseCodable(
+                    errors = arrayOf(
+                        ErrorCodable(
+                            errorCode = 100,
+                            errorMessage = "Something went wrong!"
+                        )
+                    )
+                )
+            } else {
+                val post = posts[0]
+                val comments = commentDao.getAllComments(post.id)
+                post.comments = comments
+                ResponseCodable(data = post)
+            }
         } catch (e: Exception) {
             ResponseCodable(
                 errors = arrayOf(
@@ -80,9 +111,9 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun addComment(comment: Comment): ResponseCodable<Unit> {
+    override suspend fun addComment(commentParams: CommentParams): ResponseCodable<Unit> {
         return try {
-            val rowId = commentDao.addComment(comment)
+            val rowId = commentDao.addComment(Comment(postId = commentParams.postId, commentText = commentParams.text))
             if (rowId > 0) {
                 ResponseCodable(data = Unit)
             } else {

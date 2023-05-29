@@ -21,6 +21,9 @@ interface PostDao {
     @Query("SELECT * FROM posts")
     fun getAllPosts(): List<Post>
 
+    @Query("SELECT * FROM posts WHERE id = :id LIMIT 1")
+    fun getPostById(id: Int): List<Post>
+
     @Update
     fun updatePost(post: Post)
 

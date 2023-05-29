@@ -1,13 +1,12 @@
 package dev.raju.consumrz.ui.screens.splash
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.BaseViewModel
 import dev.raju.consumrz.ui.navigation.RouteNavigator
 import dev.raju.consumrz.ui.screens.login.LoginRoute
-import dev.raju.consumrz.ui.screens.posts.PostsRoute
+import dev.raju.consumrz.ui.screens.posts.list.PostsRoute
 import dev.raju.domain.utils.UiState
 import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.usecases.UserUseCase

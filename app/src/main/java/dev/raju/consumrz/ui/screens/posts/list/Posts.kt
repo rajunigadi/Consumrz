@@ -1,4 +1,4 @@
-package dev.raju.consumrz.ui.screens.posts
+package dev.raju.consumrz.ui.screens.posts.list
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -28,8 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,14 +45,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.raju.consumrz.R
 import dev.raju.consumrz.ui.components.ErrorDialog
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
 import dev.raju.consumrz.ui.screens.posts.add.AddPostRoute
+import dev.raju.consumrz.ui.screens.posts.detail.PostDetailRoute
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.domain.enitities.Post
 import dev.raju.domain.utils.UiState
+import kotlinx.coroutines.launch
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
@@ -91,7 +99,10 @@ fun PostsScreen(
             PostsComponent(
                 posts = state.data,
                 onNewPostClick = {
-                    viewModel.navigateToRoute(AddPostRoute.route)
+                    viewModel.navigate(AddPostRoute.route)
+                },
+                onItemClick = {
+                    viewModel.navigateTpPostDetail(it.id)
                 }
             )
         }
@@ -102,10 +113,14 @@ fun PostsScreen(
 @Composable
 private fun PostsComponent(
     posts: List<Post>?,
-    onNewPostClick: () -> Unit
+    onNewPostClick: () -> Unit,
+    onItemClick: (post: Post) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    var selectedIndex by remember { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -132,7 +147,7 @@ private fun PostsComponent(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { paddingValues ->
-            if(posts.isNullOrEmpty()) {
+            if (posts.isNullOrEmpty()) {
                 Column(
                     Modifier
                         .fillMaxSize(),
@@ -162,9 +177,24 @@ private fun PostsComponent(
                         )
                     }*/
 
-                    LazyColumn {
-                        items(posts) { post ->
-                            PostItem(post)
+                    LazyColumn(state = listState) {
+                        items(items = posts) { post ->
+                            PostItem(
+                                post = post,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                                    .selectable(
+                                        selected = post.id == selectedIndex,
+                                        onClick = {
+                                            selectedIndex = if (selectedIndex != post.id)
+                                                post.id else -1
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar("Selected index: $selectedIndex")
+                                            }
+                                            onItemClick.invoke(post)
+                                        })
+                            )
                         }
                     }
                 }
@@ -174,13 +204,14 @@ private fun PostsComponent(
 }
 
 @Composable
-fun PostItem(post: Post) {
+fun PostItem(
+    post: Post,
+    modifier: Modifier
+) {
     Card(
         border = BorderStroke(1.dp, Color.Black),
         colors = CardDefaults.cardColors(containerColor = Transparent),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+        modifier = modifier,
         shape = RectangleShape
     ) {
         Column(
@@ -213,9 +244,15 @@ fun GreetingPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            PostsComponent(emptyList()) {
+            PostsComponent(
+                posts = emptyList(),
+                onNewPostClick = {
 
-            }
+                },
+                onItemClick = {
+
+                }
+            )
         }
     }
 }
