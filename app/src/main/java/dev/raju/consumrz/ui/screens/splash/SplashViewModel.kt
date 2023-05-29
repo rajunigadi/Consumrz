@@ -8,11 +8,11 @@ import dev.raju.consumrz.BaseViewModel
 import dev.raju.consumrz.ui.navigation.RouteNavigator
 import dev.raju.consumrz.ui.screens.login.LoginRoute
 import dev.raju.consumrz.ui.screens.posts.PostsRoute
-import dev.raju.domain.utils.ResponseCodable
+import dev.raju.domain.utils.UiState
 import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.usecases.UserUseCase
 import dev.raju.domain.utils.DispatcherProvider
-import kotlinx.coroutines.delay
+import dev.raju.domain.utils.ErrorCodable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,8 +32,8 @@ class SplashViewModel @Inject constructor(
     private val useCase: UserUseCase
 ) : BaseViewModel(), RouteNavigator by routeNavigator {
 
-    private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
-    val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<LoginState>>(UiState.Empty)
+    val uiState: StateFlow<UiState<LoginState>> = _uiState.asStateFlow()
 
     fun checkLogin() {
         viewModelScope.launch() {
@@ -41,31 +41,25 @@ class SplashViewModel @Inject constructor(
                 .checkLogin()
                 .flowOn(dispatcherProvider.io)
                 .catch { e ->
-                    _uiState.value = ResponseCodable.Failure(e.message ?: "Something went wrong")
+                    _uiState.value = UiState.Failure(errrors = ErrorCodable.defaultErrors(e))
                 }
                 .collect { loginState ->
                     println("aarna: loginState: $loginState")
                     when (loginState) {
-                        is ResponseCodable.Empty -> {
+                        is UiState.Empty -> {
 
                         }
 
-                        is ResponseCodable.Loading -> {
+                        is UiState.Loading -> {
 
                         }
 
-                        is ResponseCodable.Failure -> {
-
+                        is UiState.Failure -> {
+                            navigateToRoutePopUpTo(route = LoginRoute.route, popUpToRoute = SplashRoute.route)
                         }
 
-                        is ResponseCodable.Success -> {
-                            val route = if (loginState.data?.state == true) {
-                                PostsRoute.route
-                            } else {
-                                LoginRoute.route
-                            }
-                            Log.d("aarna", "route: $route")
-                            navigateToRoutePopUpTo(route = route, popUpToRoute = SplashRoute.route)
+                        is UiState.Success -> {
+                            navigateToRoutePopUpTo(route = PostsRoute.route, popUpToRoute = SplashRoute.route)
                         }
                     }
                 }

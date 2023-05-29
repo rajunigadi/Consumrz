@@ -32,6 +32,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.raju.consumrz.R
+import dev.raju.consumrz.ui.theme.LightGray
+import dev.raju.consumrz.ui.theme.PurpleGrey80
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
@@ -62,42 +64,45 @@ fun AppLogo() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.inverseSurface),
+            .background(LightGray),
         contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = stringResource(id = R.string.app_name),
-            modifier = Modifier.padding(24.dp)
+            modifier = Modifier.padding(48.dp)
         )
     }
 }
 @Composable
 fun TextHeader(
-    label: String = stringResource(id = R.string.welcome_to_app)
+    label: String = stringResource(id = R.string.welcome_to_app),
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 24.dp)
 ) {
     Text(
         text = label,
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        modifier = modifier
     )
 }
 
 @Composable
 fun DefaultButton(
     label: String = stringResource(id = R.string.login),
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     onButtonClick: () -> Unit,
 ) {
     Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
         onClick = {
             onButtonClick.invoke()
-        }
+        },
+        shape = RoundedCornerShape(4.dp),
     ) {
         Text(text = label)
     }
@@ -214,7 +219,6 @@ fun LinkText(
                 style = MaterialTheme.typography.labelLarge
             )
         }
-
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()

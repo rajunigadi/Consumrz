@@ -10,7 +10,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.raju.data.local.CommentDao
 import dev.raju.data.local.ConsumrzDatabase
+import dev.raju.data.local.PostDao
 import dev.raju.data.local.UserDao
 import dev.raju.data.repositories.DatastoreRepositoryImpl
 import dev.raju.domain.repositories.DatastoreRepository
@@ -29,6 +31,12 @@ class DataModule {
 
     @Provides
     @Singleton
+    fun providesDatastoreRepository(@ApplicationContext context: Context): DatastoreRepository {
+        return DatastoreRepositoryImpl(context.userPreferencesDataStore)
+    }
+
+    @Provides
+    @Singleton
     fun providesConsumrzDatabase(@ApplicationContext context: Context): ConsumrzDatabase {
         return Room.databaseBuilder(
             context, ConsumrzDatabase::class.java, "ConsumrzDatabase"
@@ -43,7 +51,13 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun providesDatastoreRepository(@ApplicationContext context: Context): DatastoreRepository {
-        return DatastoreRepositoryImpl(context.userPreferencesDataStore)
+    fun providesPostDao(consumrzDatabase: ConsumrzDatabase): PostDao {
+        return consumrzDatabase.postDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesCommentDao(consumrzDatabase: ConsumrzDatabase): CommentDao {
+        return consumrzDatabase.commentDao()
     }
 }

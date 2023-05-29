@@ -31,6 +31,8 @@ room = "2.2.6"
 
 datastore = "1.0.0"
 
+gson = "2.10.1"
+
 # test
 junit = "4.13.2"
 junit-integration = "1.1.2"
@@ -75,6 +77,8 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 
 # testing

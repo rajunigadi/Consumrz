@@ -1,11 +1,11 @@
 package dev.raju.domain.usecases
 
-import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.enitities.SignInParams
+import dev.raju.domain.enitities.User
 import dev.raju.domain.repositories.UserRepository
 import dev.raju.domain.utils.DispatcherProvider
-import dev.raju.domain.utils.ResponseCodable
-import kotlinx.coroutines.delay
+import dev.raju.domain.utils.ErrorCodable
+import dev.raju.domain.utils.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -14,42 +14,63 @@ import kotlinx.coroutines.flow.flowOn
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
 interface UserUseCase {
-    suspend fun checkLogin(): Flow<ResponseCodable<LoginState>>
-    suspend fun signIn(params: SignInParams): Flow<ResponseCodable<LoginState>>
-    suspend fun register(params: SignInParams): Flow<ResponseCodable<LoginState>>
+    suspend fun checkLogin(): Flow<UiState<Unit>>
+    suspend fun signIn(params: SignInParams): Flow<UiState<User>>
+    suspend fun register(params: SignInParams): Flow<UiState<Unit>>
 }
 
 class UserUseCaseImpl(
     private val repository: UserRepository,
     private val dispatcherProvider: DispatcherProvider
 ) : UserUseCase {
-    override suspend fun checkLogin(): Flow<ResponseCodable<LoginState>> {
+    override suspend fun checkLogin(): Flow<UiState<Unit>> {
         return flow {
-            emit(ResponseCodable.Loading)
+            emit(UiState.Loading)
             try {
-                emit(ResponseCodable.Success(repository.checkLogin()))
+                val response = repository.checkLogin()
+                if(response.data != null) {
+                    emit(UiState.Success(response.data))
+                } else if(!response.errors.isNullOrEmpty()) {
+                    emit(UiState.Failure(response.errors))
+                } else {
+                    emit(UiState.Failure(ErrorCodable.defaultErrors()))
+                }
             } catch (e: Exception) {
-                emit(ResponseCodable.Failure(e.message))
+                emit(UiState.Failure(ErrorCodable.defaultErrors(e)))
             }
         }.flowOn(dispatcherProvider.io)
     }
 
-    override suspend fun signIn(params: SignInParams): Flow<ResponseCodable<LoginState>> {
+    override suspend fun signIn(params: SignInParams): Flow<UiState<User>> {
         return flow {
             try {
-                emit(ResponseCodable.Success(repository.signIn(params)))
+                val response = repository.signIn(params)
+                if(response.data != null) {
+                    emit(UiState.Success(response.data))
+                } else if(!response.errors.isNullOrEmpty()) {
+                    emit(UiState.Failure(response.errors))
+                } else {
+                    emit(UiState.Failure(ErrorCodable.defaultErrors()))
+                }
             } catch (e: Exception) {
-                emit(ResponseCodable.Failure(e.message))
+                emit(UiState.Failure(ErrorCodable.defaultErrors(e)))
             }
         }.flowOn(dispatcherProvider.io)
     }
 
-    override suspend fun register(params: SignInParams): Flow<ResponseCodable<LoginState>> {
+    override suspend fun register(params: SignInParams): Flow<UiState<Unit>> {
         return flow {
             try {
-                emit(ResponseCodable.Success(repository.register(params)))
+                val response = repository.register(params)
+                if(response.data != null) {
+                    emit(UiState.Success(response.data))
+                } else if(!response.errors.isNullOrEmpty()) {
+                    emit(UiState.Failure(response.errors))
+                } else {
+                    emit(UiState.Failure(ErrorCodable.defaultErrors()))
+                }
             } catch (e: Exception) {
-                emit(ResponseCodable.Failure(e.message))
+                emit(UiState.Failure(ErrorCodable.defaultErrors(e)))
             }
         }.flowOn(dispatcherProvider.io)
     }

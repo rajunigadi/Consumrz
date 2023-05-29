@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import dev.raju.consumrz.ui.screens.login.LoginRoute
 import dev.raju.consumrz.ui.screens.posts.PostsRoute
+import dev.raju.consumrz.ui.screens.posts.add.AddPostRoute
 import dev.raju.consumrz.ui.screens.register.RegisterRoute
 import dev.raju.consumrz.ui.screens.splash.SplashRoute
 
@@ -29,6 +30,7 @@ fun NavigationView(
         LoginRoute.composable(this, navController)
         RegisterRoute.composable(this, navController)
         PostsRoute.composable(this, navController)
+        AddPostRoute.composable(this, navController)
     }
 }
 

@@ -38,6 +38,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
+    implementation(libs.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.integration)
     androidTestImplementation(libs.espresso)

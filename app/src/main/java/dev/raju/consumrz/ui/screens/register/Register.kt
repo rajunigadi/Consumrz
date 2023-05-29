@@ -1,33 +1,48 @@
 package dev.raju.consumrz.ui.screens.register
 
-import android.widget.Toast
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import dev.raju.consumrz.R
 import dev.raju.consumrz.ui.components.AppLogo
 import dev.raju.consumrz.ui.components.DefaultButton
 import dev.raju.consumrz.ui.components.DefaultSpacer
-import dev.raju.consumrz.ui.components.EmailComponent
 import dev.raju.consumrz.ui.components.LinkText
-import dev.raju.consumrz.ui.components.PasswordComponent
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
-import dev.raju.consumrz.ui.screens.login.LoginScreen
-import dev.raju.consumrz.ui.screens.login.LoginViewModel
+import dev.raju.consumrz.ui.screens.login.LoginRoute
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
+import dev.raju.consumrz.ui.validators.Email
+import dev.raju.consumrz.ui.validators.Field
+import dev.raju.consumrz.ui.validators.Form
+import dev.raju.consumrz.ui.validators.FormState
+import dev.raju.consumrz.ui.validators.Required
+import kotlinx.coroutines.launch
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
@@ -48,94 +63,129 @@ object RegisterRoute : NavRoute<RegisterViewModel> {
 fun RegisterScreen(
     viewModel: RegisterViewModel
 ) {
-    val context = LocalContext.current
     RegisterComponent(
-        onRegisterClick = { email, password, repeatPassword ->
-            println("email: $email and password: $password")
-            if (email.isEmpty() and password.isNotEmpty()) {
-                Toast.makeText(context, R.string.email_empty, Toast.LENGTH_SHORT).show()
-            }
-            if (password.isEmpty() and email.isNotEmpty()) {
-                Toast.makeText(context, R.string.password_empty, Toast.LENGTH_SHORT).show()
-            }
-            if (email.isEmpty() and password.isEmpty()) {
-                Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
-            }
-            if (password.isEmpty() and repeatPassword.isEmpty()) {
-                //Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
-            }
-            if (password != repeatPassword) {
-                //Toast.makeText(context, R.string.email_password_empty, Toast.LENGTH_SHORT).show()
-            }
-            if (email.isNotEmpty() and password.isNotEmpty()) {
-                viewModel.register(email, password)
-            }
+        onBackClick = {
+            viewModel.onBackClick()
+        },
+        onRegisterClick = { params ->
+            viewModel.register(params)
         },
         onLoginClick = {
-            /*navController.navigate(NavRoute.Login.path) {
-                popUpTo(NavRoute.Register.path) {
-                    inclusive = true
-                }
-            }*/
+            viewModel.navigate(LoginRoute.route)
         }
     )
 }
 
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RegisterComponent(
-    onRegisterClick: (email: String, password: String, repeatPassword: String) -> Unit,
+    onBackClick: () -> Unit,
+    onRegisterClick: (data: Map<String, String>) -> Unit,
     onLoginClick: () -> Unit,
 ) {
-    Column(
-        Modifier
-            .fillMaxSize()
-    ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-        val email = remember { mutableStateOf(TextFieldValue()) }
-        val password = remember { mutableStateOf(TextFieldValue()) }
-        val repeatPassword = remember { mutableStateOf(TextFieldValue()) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.register)) },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onBackClick.invoke()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
 
-        AppLogo()
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        content = { paddingValues ->
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                val state by remember { mutableStateOf(FormState()) }
 
-        TextHeader(
-            label = stringResource(id = R.string.signing_up),
-        )
+                var password: String by mutableStateOf("")
+                var repeatPassword: String by mutableStateOf("")
+                //val repeatPassword = remember { mutableStateOf(TextFieldValue()) }
 
-        EmailComponent(onValueChange = {
-            email.value = it
-        })
+                AppLogo()
 
-        PasswordComponent(onValueChange = {
-            password.value = it
-        })
+                TextHeader(
+                    label = stringResource(id = R.string.signing_up),
+                )
 
-        PasswordComponent(
-            label = stringResource(id = R.string.repeat_password),
-            placeholder = stringResource(id = R.string.your_repeat_password),
-            onValueChange = {
-                repeatPassword.value = it
-            })
+                Column {
+                    Form(
+                        state = state, fields = listOf(
+                            Field(
+                                name = stringResource(id = R.string.email),
+                                label = stringResource(id = R.string.email),
+                                placeholder = stringResource(id = R.string.your_email),
+                                keyboardType = KeyboardType.Email,
+                                validators = listOf(Required(), Email())
+                            ),
+                            Field(
+                                name = stringResource(id = R.string.password),
+                                label = stringResource(id = R.string.password),
+                                placeholder = stringResource(id = R.string.your_password),
+                                keyboardType = KeyboardType.Password,
+                                validators = listOf(Required()),
+                                onValueChange = {
+                                    password = it
+                                }
+                            ),
+                            Field(
+                                name = stringResource(id = R.string.repeat_password),
+                                label = stringResource(id = R.string.repeat_password),
+                                placeholder = stringResource(id = R.string.your_repeat_password),
+                                keyboardType = KeyboardType.Password,
+                                validators = listOf(Required()),
+                                onValueChange = {
+                                    repeatPassword = it
+                                }
+                            )
+                        )
+                    )
+                    DefaultButton(
+                        label = stringResource(id = R.string.register),
+                        onButtonClick = {
+                            if (state.validate()) {
+                                println("password: $password and repeatPassword: $repeatPassword")
+                                if (password == repeatPassword) {
+                                    onRegisterClick.invoke(state.getData())
+                                } else {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            "Password & repeat password should match"
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+                DefaultSpacer(space = 16.dp)
 
-        DefaultButton(
-            label = stringResource(id = R.string.register),
-            onButtonClick = {
-                onRegisterClick.invoke(
-                    email.value.text,
-                    password.value.text,
-                    repeatPassword.value.text
+                LinkText(
+                    label = stringResource(id = R.string.already_have_account),
+                    onClickListener = {
+                        onLoginClick.invoke()
+                    }
                 )
             }
-        )
-
-        DefaultSpacer(space = 16.dp)
-
-        LinkText(
-            label = stringResource(id = R.string.already_have_account),
-            onClickListener = {
-                onLoginClick.invoke()
-            }
-        )
-    }
+        }
+    )
 }
 
 @Preview(showBackground = true)
@@ -147,7 +197,10 @@ fun GreetingPreview() {
             color = MaterialTheme.colorScheme.background
         ) {
             RegisterComponent(
-                onRegisterClick = { email, password, repeatPassword ->
+                onBackClick = {
+
+                },
+                onRegisterClick = { params ->
 
                 },
                 onLoginClick = {

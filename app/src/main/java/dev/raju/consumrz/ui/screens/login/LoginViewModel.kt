@@ -7,18 +7,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.BaseViewModel
 import dev.raju.consumrz.ui.navigation.RouteNavigator
 import dev.raju.consumrz.ui.screens.posts.PostsRoute
-import dev.raju.consumrz.ui.screens.register.RegisterRoute
-import dev.raju.domain.utils.ResponseCodable
+import dev.raju.domain.utils.UiState
 import dev.raju.domain.enitities.LoginState
 import dev.raju.domain.enitities.SignInParams
 import dev.raju.domain.usecases.UserUseCase
 import dev.raju.domain.utils.DispatcherProvider
-import kotlinx.coroutines.delay
+import dev.raju.domain.utils.ErrorCodable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,34 +32,36 @@ class LoginViewModel @Inject constructor(
     private val useCase: UserUseCase
 ) : BaseViewModel(), RouteNavigator by routeNavigator {
 
-    private val _uiState = MutableStateFlow<ResponseCodable<LoginState>>(ResponseCodable.Empty)
-    val uiState: StateFlow<ResponseCodable<LoginState>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<LoginState>>(UiState.Empty)
+    val uiState: StateFlow<UiState<LoginState>> = _uiState.asStateFlow()
 
-    fun signIn(email: String, password: String) {
+    fun signIn(params: Map<String, String>) {
         job = viewModelScope.launch(dispatcherProvider.main + exceptionHandler) {
-            _uiState.value = ResponseCodable.Loading
+            val signInParams = SignInParams.from(params)
+            Log.d("aarna", "Email: ${signInParams.email} and password: ${signInParams.password}")
+            _uiState.value = UiState.Loading
             useCase
-                .signIn(params = SignInParams(email = email, password = password))
+                .signIn(params = SignInParams(email = signInParams.email, password = signInParams.password))
                 .flowOn(dispatcherProvider.io)
                 .catch { e ->
-                    _uiState.value = ResponseCodable.Failure(e.message ?: "Something went wrong")
+                    _uiState.value = UiState.Failure(errrors = ErrorCodable.defaultErrors(e))
                 }
                 .collect { loginState ->
                     println("aarna: loginState: $loginState")
                     when (loginState) {
-                        is ResponseCodable.Empty -> {
+                        is UiState.Empty -> {
 
                         }
 
-                        is ResponseCodable.Loading -> {
+                        is UiState.Loading -> {
 
                         }
 
-                        is ResponseCodable.Failure -> {
+                        is UiState.Failure -> {
 
                         }
 
-                        is ResponseCodable.Success -> {
+                        is UiState.Success -> {
                             navigateToRoutePopUpTo(
                                 route = PostsRoute.route,
                                 popUpToRoute = LoginRoute.route
