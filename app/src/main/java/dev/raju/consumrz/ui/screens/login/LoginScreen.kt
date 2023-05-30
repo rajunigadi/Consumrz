@@ -66,6 +66,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.ui.screens.destinations.ForgotPasswordScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PrivacyScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.RegisterScreenDestination
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.ui.theme.Purple700
 import dev.raju.consumrz.ui.theme.PurpleBg
@@ -262,8 +263,8 @@ fun LoginScreen(
                 }
                 TextButton(
                     onClick = {
-                        //navigator.popBackStack()
-                        //navigator.navigate(RegisterScreenDestination)
+                        navigator.popBackStack()
+                        navigator.navigate(RegisterScreenDestination)
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

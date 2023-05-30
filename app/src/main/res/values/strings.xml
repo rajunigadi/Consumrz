@@ -47,4 +47,7 @@
     <string name="new_post">New post</string>
     <string name="edit_post">Edit post</string>
 
+    <string name="new_comment">New comment</string>
+    <string name="edit_comment">Edit comment</string>
+
 </resources>

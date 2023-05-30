@@ -44,18 +44,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.screens.destinations.AddCommentScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
  * Created by Rajashekhar Vanahalli on 30 May, 2023
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class)
 @Destination
 @Composable
 fun PostDetailScreen(
@@ -80,7 +80,10 @@ fun PostDetailScreen(
     val listState = rememberLazyListState()
     var selectedIndex by remember { mutableStateOf(-1) }
     val loaderState = viewModel.loaderState.value
+    val comments by viewModel.comments.collectAsStateWithLifecycle()
+
     LaunchedEffect(key1 = true) {
+        viewModel.loadComments(postId = post.id)
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvents.SnackbarEvent -> {
@@ -188,7 +191,12 @@ fun PostDetailScreen(
 
                         IconButton(
                             onClick = {
-                                //onNewCommentClick.invoke()
+                                navigator.navigate(
+                                    AddCommentScreenDestination(
+                                        postId = post.id,
+                                        comment = null
+                                    )
+                                )
                             }
                         ) {
                             Icon(
@@ -198,7 +206,7 @@ fun PostDetailScreen(
                         }
                     }
 
-                    if (post.comments.isNullOrEmpty()) {
+                    if (comments.isNullOrEmpty()) {
                         Column(
                             Modifier
                                 .fillMaxSize(),
@@ -210,33 +218,31 @@ fun PostDetailScreen(
                             )
                         }
                     } else {
-                        Column {
-                            Column(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(paddingValues),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                LazyColumn(state = listState) {
-                                    items(items = post.comments!!) { comment ->
-                                        CommentItem(
-                                            comment = comment,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 10.dp)
-                                                .selectable(
-                                                    selected = comment.id == selectedIndex,
-                                                    onClick = {
-                                                        selectedIndex =
-                                                            if (selectedIndex != comment.id)
-                                                                comment.id else -1
-                                                        scope.launch {
-                                                            snackbarHostState.showSnackbar("Selected index: $selectedIndex")
-                                                        }
-                                                        //navigator.navigate(event.route)
-                                                    })
-                                        )
-                                    }
+                        Column(
+                            Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            LazyColumn(state = listState) {
+                                items(items = comments) { comment ->
+                                    CommentItem(
+                                        comment = comment,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 10.dp)
+                                            .selectable(
+                                                selected = comment.id == selectedIndex,
+                                                onClick = {
+                                                    selectedIndex =
+                                                        if (selectedIndex != comment.id)
+                                                            comment.id!! else -1
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar("Selected index: $selectedIndex")
+                                                    }
+                                                    navigator.navigate(AddCommentScreenDestination(postId = post.id, comment = comment))
+                                                })
+                                    )
                                 }
                             }
                         }

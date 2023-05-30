@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.usecases.PostsUseCase
 import dev.raju.consumrz.ui.screens.LoaderState
+import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PostsScreenDestination
 import dev.raju.consumrz.utils.DispatcherProvider
 import dev.raju.consumrz.utils.Resource
@@ -39,6 +41,9 @@ class PostsViewModel @Inject constructor(
 
     private val _posts = MutableStateFlow<List<Post>>(emptyList())
     val posts: StateFlow<List<Post>> = _posts.asStateFlow()
+
+    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val comments: StateFlow<List<Comment>> = _comments.asStateFlow()
 
     // add new post
     private val _titleState = mutableStateOf(TextFieldState())
@@ -157,6 +162,144 @@ class PostsViewModel @Inject constructor(
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             addPostResult.result.message ?: "Error!"
+                        )
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun loadComments(postId: Int) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+            val commentsResult = postsUseCase.loadComments(postId = postId).result
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            when (commentsResult) {
+                is Resource.Success -> {
+                    if (commentsResult.data.isNullOrEmpty()) {
+                        _eventFlow.emit(
+                            UiEvents.SnackbarEvent("No posts found")
+                        )
+                    } else {
+                        _comments.emit(commentsResult.data)
+                    }
+                }
+
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(commentsResult.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            commentsResult.message ?: "Error!"
+                        )
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun addComment(comment: Comment) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            val addCommentResult = postsUseCase.addComment(
+                comment = comment
+            )
+
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            if (addCommentResult.textError != null) {
+                _textState.value = textState.value.copy(error = addCommentResult.textError)
+            }
+
+            when (addCommentResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateUp
+                    )
+                }
+
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(addCommentResult.result.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            addCommentResult.result.message ?: "Error!"
+                        )
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun editComment(comment: Comment) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            val editResult = postsUseCase.editComment(
+                comment = comment
+            )
+
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            if (editResult.textError != null) {
+                _textState.value = textState.value.copy(error = editResult.textError)
+            }
+
+            when (editResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateUp
+                    )
+                }
+
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(editResult.result.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            editResult.result.message ?: "Error!"
+                        )
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun deleteComment(comment: Comment) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            val deleteResult = postsUseCase.deleteComment(comment = comment)
+
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            when (deleteResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateUp
+                    )
+                }
+
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(deleteResult.result.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            deleteResult.result.message ?: "Error!"
                         )
                     )
                 }

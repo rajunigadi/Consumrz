@@ -7,6 +7,11 @@ data class PostListResult(
     val result: Resource<List<Post>>? = null
 )
 
+data class CommentsListResult(
+    val error : String? = null,
+    val result: Resource<List<Comment>>? = null
+)
+
 data class PostResult(
     val titleError : String? = null,
     val textError: String? = null,

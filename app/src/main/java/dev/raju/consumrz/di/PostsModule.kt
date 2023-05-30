@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import dev.raju.consumrz.data.local.database.CommentDao
 import dev.raju.consumrz.data.local.database.PostDao
 import dev.raju.consumrz.data.repositories.PostsRepositoryImpl
 import dev.raju.consumrz.domain.repositories.PostsRepository
@@ -21,9 +22,10 @@ class PostsModule {
     @Provides
     @ViewModelScoped
     fun providesPostsRepository(
-        postDao: PostDao
+        postDao: PostDao,
+        commentDao: CommentDao
     ): PostsRepository {
-        return PostsRepositoryImpl(postDao = postDao)
+        return PostsRepositoryImpl(postDao = postDao, commentDao = commentDao)
     }
 
     @Provides
