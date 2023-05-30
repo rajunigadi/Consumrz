@@ -1,8 +1,7 @@
-package dev.raju.consumrz.ui.screens.login
+package dev.raju.consumrz.ui.screens.register
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +64,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.destinations.ForgotPasswordScreenDestination
+import dev.raju.consumrz.destinations.LoginScreenDestination
 import dev.raju.consumrz.destinations.PrivacyScreenDestination
 import dev.raju.consumrz.destinations.RegisterScreenDestination
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
@@ -82,15 +82,17 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     navigator: DestinationsNavigator
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
+    val viewModel: RegisterViewModel = hiltViewModel()
     val emailState = viewModel.emailState.value
     val passwordState = viewModel.passwordState.value
+    val repeatPasswordState = viewModel.repeatPasswordState.value
     val loginState = viewModel.loginState.value
     val snackbarHostState = remember { SnackbarHostState() }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var repeatPasswordVisible by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
@@ -109,7 +111,7 @@ fun LoginScreen(
                     navigator.popBackStack() // clear login stack
                     navigator.navigate(event.route)
                     snackbarHostState.showSnackbar(
-                        message = "Login Successful",
+                        message = "Registration Successful",
                         duration = SnackbarDuration.Short
                     )
                 }
@@ -123,8 +125,7 @@ fun LoginScreen(
         Column {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -133,7 +134,6 @@ fun LoginScreen(
                     modifier = Modifier.padding(48.dp)
                 )
             }
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -148,7 +148,7 @@ fun LoginScreen(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(id = R.string.welcome_to_app),
+                    text = stringResource(id = R.string.signing_up),
                     fontSize = 26.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -156,6 +156,7 @@ fun LoginScreen(
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
+
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = emailState.text,
@@ -198,8 +199,8 @@ fun LoginScreen(
                         else Icons.Filled.VisibilityOff
                         // Localized description for accessibility services
                         val description =
-                            if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(
-                                id = R.string.show_password
+                            if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
                             )
 
                         // Toggle button to hide or display password
@@ -211,6 +212,44 @@ fun LoginScreen(
                 if (passwordState.error != "") {
                     Text(
                         text = passwordState.error ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = repeatPasswordState.text,
+                    onValueChange = {
+                        viewModel.setRepeatPassword(it)
+                    },
+                    label = { Text(stringResource(id = R.string.your_repeat_password)) },
+                    visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    isError = repeatPasswordState.error != null,
+                    trailingIcon = {
+                        val image = if (repeatPasswordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+                        // Localized description for accessibility services
+                        val description =
+                            if (repeatPasswordVisible) stringResource(R.string.hide_repeat_password) else stringResource(
+                                R.string.show_repeat_password
+                            )
+
+                        // Toggle button to hide or display password
+                        IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
+                            Icon(imageVector = image, description)
+                        }
+                    }
+                )
+                if (repeatPasswordState.error != "") {
+                    Text(
+                        text = repeatPasswordState.error ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.End,
@@ -245,7 +284,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        viewModel.signInUser()
+                        viewModel.register()
                     },
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -265,7 +304,7 @@ fun LoginScreen(
                 TextButton(
                     onClick = {
                         navigator.popBackStack()
-                        navigator.navigate(RegisterScreenDestination)
+                        navigator.navigate(LoginScreenDestination)
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -274,13 +313,13 @@ fun LoginScreen(
                             withStyle(
                                 style = SpanStyle(color = Color.Black)
                             ) {
-                                append(stringResource(R.string.don_t_have_an_account))
+                                append(stringResource(R.string.already_have_an_account))
                             }
                             append(" ")
                             withStyle(
                                 style = SpanStyle(color = PurpleBg, fontWeight = FontWeight.Bold)
                             ) {
-                                append(stringResource(R.string.sign_up))
+                                append(stringResource(R.string.sign_in))
                             }
                         },
                         fontFamily = FontFamily.SansSerif,
@@ -292,6 +331,13 @@ fun LoginScreen(
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginComponent() {
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
@@ -299,7 +345,7 @@ fun LoginPreview() {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            LoginScreen(EmptyDestinationsNavigator)
+            RegisterScreen(EmptyDestinationsNavigator)
         }
     }
 }

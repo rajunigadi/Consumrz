@@ -47,4 +47,47 @@ class UserUseCase(
             result = repository.login(loginRequest)
         )
     }
+
+    suspend fun register(
+        email: String,
+        password: String,
+        repeatPassword: String
+    ): AuthResult {
+        val emailError = if (email.isBlank()) "Username cannot be blank" else null
+        val passwordError = if (password.isBlank()) "Password cannot be blank" else null
+        val repeatPasswordError = if (repeatPassword.isBlank()) "Repeat Password cannot be blank" else null
+
+        if (emailError != null) {
+            return AuthResult(
+                emailError = emailError
+            )
+        }
+
+        if (passwordError != null) {
+            return AuthResult(
+                passwordError = passwordError
+            )
+        }
+
+        if (repeatPasswordError != null) {
+            return AuthResult(
+                repeatPasswordError = repeatPasswordError
+            )
+        }
+
+        if(password != repeatPassword) {
+            return AuthResult(
+                passwordMatchError = "Password & repeat password not matching"
+            )
+        }
+
+        val registerRequest = AuthRequest(
+            email = email.trim(),
+            password = password.trim()
+        )
+
+        return AuthResult(
+            result = repository.register(registerRequest)
+        )
+    }
 }

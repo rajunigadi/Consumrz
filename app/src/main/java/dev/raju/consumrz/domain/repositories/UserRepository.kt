@@ -9,4 +9,5 @@ import dev.raju.consumrz.utils.Resource
 interface UserRepository {
     suspend fun isUserLoggedIn(): Resource<Unit>
     suspend fun login(loginRequest: AuthRequest): Resource<Unit>
+    suspend fun register(loginRequest: AuthRequest): Resource<Unit>
 }

@@ -15,7 +15,7 @@ object NavGraphs {
             ForgotPasswordScreenDestination,
             PrivacyScreenDestination,
             RegisterScreenDestination,
-            HomeScreenDestination,
+            PostsScreenDestination,
         )
     )
 }

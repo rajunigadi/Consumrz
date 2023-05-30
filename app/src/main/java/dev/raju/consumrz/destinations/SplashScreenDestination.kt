@@ -12,7 +12,7 @@ object SplashScreenDestination : DirectionDestination {
     operator fun invoke() = this
 
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override val baseRoute = "welcome_screen"
+    override val baseRoute = "splash_screen"
 
     override val route = baseRoute
 

@@ -12,7 +12,7 @@ object ForgotPasswordScreenDestination : DirectionDestination {
     operator fun invoke() = this
 
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override val baseRoute = "forgot_password"
+    override val baseRoute = "forgot_password_screen"
 
     override val route = baseRoute
 

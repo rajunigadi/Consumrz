@@ -1,4 +1,4 @@
-package dev.raju.consumrz.ui.screens.login
+package dev.raju.consumrz.ui.screens.register
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +22,7 @@ import javax.inject.Inject
  * Created by Rajashekhar Vanahalli on 30 May, 2023
  */
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class RegisterViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val userUseCase: UserUseCase
 ) : ViewModel() {
@@ -47,13 +47,21 @@ class LoginViewModel @Inject constructor(
         _passwordState.value = passwordState.value.copy(text = value, error = null)
     }
 
-    fun signInUser() {
+    private val _repeatPasswordState = mutableStateOf(TextFieldState())
+    val repeatPasswordState: State<TextFieldState> = _repeatPasswordState
+
+    fun setRepeatPassword(value: String) {
+        _repeatPasswordState.value = repeatPasswordState.value.copy(text = value, error = null)
+    }
+
+    fun register() {
         viewModelScope.launch(dispatcherProvider.io) {
             _loginState.value = loginState.value.copy(isLoading = false)
 
-            val loginResult = userUseCase.signIn(
+            val loginResult = userUseCase.register(
                 email = emailState.value.text,
-                password = passwordState.value.text
+                password = passwordState.value.text,
+                repeatPassword = repeatPasswordState.value.text
             )
 
             _loginState.value = loginState.value.copy(isLoading = false)
@@ -63,6 +71,12 @@ class LoginViewModel @Inject constructor(
             }
             if (loginResult.passwordError != null) {
                 _passwordState.value = passwordState.value.copy(error = loginResult.passwordError)
+            }
+            if (loginResult.repeatPasswordError != null) {
+                _repeatPasswordState.value = repeatPasswordState.value.copy(error = loginResult.repeatPasswordError)
+            }
+            if (loginResult.passwordMatchError != null) {
+                _repeatPasswordState.value = repeatPasswordState.value.copy(error = loginResult.passwordMatchError)
             }
 
             when (loginResult.result) {

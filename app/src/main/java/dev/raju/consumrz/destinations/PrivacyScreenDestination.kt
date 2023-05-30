@@ -12,7 +12,7 @@ object PrivacyScreenDestination : DirectionDestination {
     operator fun invoke() = this
     
     @get:RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override val baseRoute = "privacy"
+    override val baseRoute = "privacy_screen"
 
     override val route = baseRoute
     

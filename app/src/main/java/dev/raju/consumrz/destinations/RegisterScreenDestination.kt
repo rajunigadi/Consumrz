@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.*
+import dev.raju.consumrz.ui.screens.register.RegisterScreen
 
 object RegisterScreenDestination : DirectionDestination {
          
@@ -19,10 +20,8 @@ object RegisterScreenDestination : DirectionDestination {
     override fun DestinationScope<Unit>.Content(
 		dependenciesContainerBuilder: @Composable DependenciesContainerBuilder<Unit>.() -> Unit
     ) {
-        // TODO: Rajashekhar: Add Register screen
-		/*RegisterScreen(
+        RegisterScreen(
 			navigator = destinationsNavigator
-		)*/
+		)
     }
-    
 }

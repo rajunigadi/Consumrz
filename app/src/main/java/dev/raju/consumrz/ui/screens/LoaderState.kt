@@ -1,5 +1,5 @@
 package dev.raju.consumrz.ui.screens
 
-data class AuthState(
+data class LoaderState(
     val isLoading: Boolean = false
 )

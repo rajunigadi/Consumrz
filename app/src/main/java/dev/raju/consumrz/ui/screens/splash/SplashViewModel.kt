@@ -1,14 +1,11 @@
 package dev.raju.consumrz.ui.screens.splash
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.raju.consumrz.destinations.HomeScreenDestination
+import dev.raju.consumrz.destinations.PostsScreenDestination
 import dev.raju.consumrz.destinations.LoginScreenDestination
 import dev.raju.consumrz.domain.usecases.UserUseCase
-import dev.raju.consumrz.ui.screens.AuthState
 import dev.raju.consumrz.utils.Resource
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,7 +32,7 @@ class SplashViewModel @Inject constructor(
                 is Resource.Success -> {
                     Timber.tag("aarna").d("Success")
                     _eventFlow.emit(
-                        UiEvents.NavigateEvent(HomeScreenDestination.route)
+                        UiEvents.NavigateEvent(PostsScreenDestination.route)
                     )
                 }
                 is Resource.Error -> {
