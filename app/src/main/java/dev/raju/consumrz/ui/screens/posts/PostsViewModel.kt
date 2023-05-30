@@ -1,15 +1,17 @@
-package dev.raju.consumrz.ui.screens.posts.list
+package dev.raju.consumrz.ui.screens.posts
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.raju.consumrz.destinations.PostsScreenDestination
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.usecases.PostsUseCase
 import dev.raju.consumrz.ui.screens.LoaderState
 import dev.raju.consumrz.utils.DispatcherProvider
 import dev.raju.consumrz.utils.Resource
+import dev.raju.consumrz.utils.TextFieldState
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +40,21 @@ class PostsViewModel @Inject constructor(
     private val _posts = MutableStateFlow<List<Post>>(emptyList())
     val posts: StateFlow<List<Post>> = _posts.asStateFlow()
 
+    // add new post
+    private val _titleState = mutableStateOf(TextFieldState())
+    val titleState: State<TextFieldState> = _titleState
+
+    fun setTitle(value: String) {
+        _titleState.value = titleState.value.copy(text = value, error = null)
+    }
+
+    private val _textState = mutableStateOf(TextFieldState())
+    val textState: State<TextFieldState> = _textState
+
+    fun setText(value: String) {
+        _textState.value = textState.value.copy(text = value, error = null)
+    }
+
     fun getPosts() {
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
@@ -59,6 +76,45 @@ class PostsViewModel @Inject constructor(
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             postsResult.message ?: "Error!"
+                        )
+                    )
+                }
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun addPost() {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            val addPostResult = postsUseCase.addPost(
+                title = titleState.value.text,
+                text = textState.value.text
+            )
+
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            if (addPostResult.titleError != null) {
+                _titleState.value = titleState.value.copy(error = addPostResult.titleError)
+            }
+            if (addPostResult.textError != null) {
+                _textState.value = textState.value.copy(error = addPostResult.textError)
+            }
+
+            when (addPostResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateEvent(PostsScreenDestination.route)
+                    )
+                }
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(addPostResult.result.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            addPostResult.result.message ?: "Error!"
                         )
                     )
                 }

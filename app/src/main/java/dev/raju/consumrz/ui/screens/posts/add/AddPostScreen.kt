@@ -1,8 +1,7 @@
-package dev.raju.consumrz.ui.screens.login
+package dev.raju.consumrz.ui.screens.posts.add
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,13 +66,13 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.destinations.ForgotPasswordScreenDestination
+import dev.raju.consumrz.destinations.LoginScreenDestination
 import dev.raju.consumrz.destinations.PrivacyScreenDestination
-import dev.raju.consumrz.destinations.RegisterScreenDestination
+import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.ui.theme.Purple700
 import dev.raju.consumrz.ui.theme.PurpleBg
 import dev.raju.consumrz.utils.UiEvents
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -82,15 +83,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
-fun LoginScreen(
+fun AddPostScreen(
     navigator: DestinationsNavigator
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
-    val emailState = viewModel.emailState.value
-    val passwordState = viewModel.passwordState.value
-    val loginState = viewModel.loginState.value
+    val viewModel: PostsViewModel = hiltViewModel()
+    val titleState = viewModel.titleState.value
+    val textState = viewModel.textState.value
+    val loaderState = viewModel.loaderState.value
     val snackbarHostState = remember { SnackbarHostState() }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
@@ -109,7 +109,7 @@ fun LoginScreen(
                     navigator.popBackStack() // clear login stack
                     navigator.navigate(event.route)
                     snackbarHostState.showSnackbar(
-                        message = "Login Successful",
+                        message = "New post added successfully",
                         duration = SnackbarDuration.Short
                     )
                 }
@@ -118,22 +118,30 @@ fun LoginScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.new_post),
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = stringResource(id = R.string.app_name),
-                    modifier = Modifier.padding(48.dp)
-                )
+        if (loaderState.isLoading) {
+            Column {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
-
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -141,38 +149,27 @@ fun LoginScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (loginState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(id = R.string.welcome_to_app),
-                    fontSize = 26.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Start
-                )
-
                 Spacer(modifier = Modifier.height(32.dp))
+
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = emailState.text,
+                    value = titleState.text,
                     onValueChange = {
-                        viewModel.setEmail(it)
+                        viewModel.setTitle(it)
                     },
                     placeholder = {
-                        Text(text = stringResource(id = R.string.your_email))
+                        Text(text = stringResource(id = R.string.title))
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                     ),
-                    isError = emailState.error != null
+                    isError = titleState.error != null
                 )
-                if (emailState.error != "") {
+                if (titleState.error != "") {
                     Text(
-                        text = emailState.error ?: "",
+                        text = titleState.error ?: "",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.End,
@@ -184,33 +181,17 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = passwordState.text,
+                    value = textState.text,
                     onValueChange = {
-                        viewModel.setPassword(it)
+                        viewModel.setText(it)
                     },
-                    label = { Text(stringResource(id = R.string.your_password)) },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    isError = passwordState.error != null,
-                    trailingIcon = {
-                        val image = if (passwordVisible)
-                            Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
-                        // Localized description for accessibility services
-                        val description =
-                            if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(
-                                id = R.string.show_password
-                            )
-
-                        // Toggle button to hide or display password
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, description)
-                        }
-                    }
+                    label = { Text(stringResource(id = R.string.text)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    isError = textState.error != null,
                 )
-                if (passwordState.error != "") {
+                if (textState.error != "") {
                     Text(
-                        text = passwordState.error ?: "",
+                        text = textState.error ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.End,
@@ -218,34 +199,11 @@ fun LoginScreen(
                     )
                 }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = {
-                        navigator.navigate(PrivacyScreenDestination)
-                    }) {
-                        Text(
-                            text = stringResource(id = R.string.privacy),
-                            color = Color.Black
-                        )
-                    }
-
-                    TextButton(onClick = {
-                        navigator.navigate(ForgotPasswordScreenDestination)
-                    }) {
-                        Text(
-                            text = stringResource(id = R.string.forgot_password),
-                            color = Color.Black
-                        )
-                    }
-                }
-
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Button(
                     onClick = {
-                        viewModel.signInUser()
+                        viewModel.addPost()
                     },
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -257,34 +215,9 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        text = stringResource(id = R.string.login),
+                        text = stringResource(id = R.string.send),
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp
-                    )
-                }
-                TextButton(
-                    onClick = {
-                        //navigator.popBackStack()
-                        navigator.navigate(RegisterScreenDestination)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(color = Color.Black)
-                            ) {
-                                append(stringResource(R.string.don_t_have_an_account))
-                            }
-                            append(" ")
-                            withStyle(
-                                style = SpanStyle(color = PurpleBg, fontWeight = FontWeight.Bold)
-                            ) {
-                                append(stringResource(R.string.sign_up))
-                            }
-                        },
-                        fontFamily = FontFamily.SansSerif,
-                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -292,14 +225,22 @@ fun LoginScreen(
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginComponent() {
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
     ConsumrzTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            LoginScreen(EmptyDestinationsNavigator)
+            AddPostScreen(EmptyDestinationsNavigator)
         }
     }
 }

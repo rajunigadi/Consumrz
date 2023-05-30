@@ -53,7 +53,9 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
+import dev.raju.consumrz.destinations.AddPostScreenDestination
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
@@ -118,7 +120,7 @@ fun PostsScreen(
                     IconButton(
                         onClick = {
                             // new post screen
-                            //navigator.navigate(event.route)
+                            navigator.navigate(AddPostScreenDestination)
                         }
                     ) {
                         Icon(

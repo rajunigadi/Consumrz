@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -33,6 +34,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -120,211 +122,241 @@ fun RegisterScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.register),
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navigator.navigateUp()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = stringResource(id = R.string.app_name),
-                    modifier = Modifier.padding(48.dp)
-                )
-            }
+    ) { paddingValues ->
+        if (loginState.isLoading) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.padding(paddingValues)
             ) {
-                if (loginState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(id = R.string.signing_up),
-                    fontSize = 26.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Start
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = emailState.text,
-                    onValueChange = {
-                        viewModel.setEmail(it)
-                    },
-                    placeholder = {
-                        Text(text = stringResource(id = R.string.your_email))
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                    ),
-                    isError = emailState.error != null
-                )
-                if (emailState.error != "") {
-                    Text(
-                        text = emailState.error ?: "",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = passwordState.text,
-                    onValueChange = {
-                        viewModel.setPassword(it)
-                    },
-                    label = { Text(stringResource(id = R.string.your_password)) },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    isError = passwordState.error != null,
-                    trailingIcon = {
-                        val image = if (passwordVisible)
-                            Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
-                        // Localized description for accessibility services
-                        val description =
-                            if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
-                                R.string.show_password
-                            )
-
-                        // Toggle button to hide or display password
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, description)
-                        }
-                    }
-                )
-                if (passwordState.error != "") {
-                    Text(
-                        text = passwordState.error ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = repeatPasswordState.text,
-                    onValueChange = {
-                        viewModel.setRepeatPassword(it)
-                    },
-                    label = { Text(stringResource(id = R.string.your_repeat_password)) },
-                    visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    isError = repeatPasswordState.error != null,
-                    trailingIcon = {
-                        val image = if (repeatPasswordVisible)
-                            Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
-                        // Localized description for accessibility services
-                        val description =
-                            if (repeatPasswordVisible) stringResource(R.string.hide_repeat_password) else stringResource(
-                                R.string.show_repeat_password
-                            )
-
-                        // Toggle button to hide or display password
-                        IconButton(onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
-                            Icon(imageVector = image, description)
-                        }
-                    }
-                )
-                if (repeatPasswordState.error != "") {
-                    Text(
-                        text = repeatPasswordState.error ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+        } else {
+            Column(
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    TextButton(onClick = {
-                        navigator.navigate(PrivacyScreenDestination)
-                    }) {
-                        Text(
-                            text = stringResource(id = R.string.privacy),
-                            color = Color.Black
-                        )
-                    }
-
-                    TextButton(onClick = {
-                        navigator.navigate(ForgotPasswordScreenDestination)
-                    }) {
-                        Text(
-                            text = stringResource(id = R.string.forgot_password),
-                            color = Color.Black
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        viewModel.register()
-                    },
-                    shape = RoundedCornerShape(4.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Purple700,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        text = stringResource(id = R.string.login),
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_logo),
+                        contentDescription = stringResource(id = R.string.app_name),
                     )
                 }
-                TextButton(
-                    onClick = {
-                        navigator.popBackStack()
-                        navigator.navigate(LoginScreenDestination)
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
                     Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(color = Color.Black)
-                            ) {
-                                append(stringResource(R.string.already_have_an_account))
-                            }
-                            append(" ")
-                            withStyle(
-                                style = SpanStyle(color = PurpleBg, fontWeight = FontWeight.Bold)
-                            ) {
-                                append(stringResource(R.string.sign_in))
-                            }
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.signing_up),
+                        fontSize = 26.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Start
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = emailState.text,
+                        onValueChange = {
+                            viewModel.setEmail(it)
                         },
-                        fontFamily = FontFamily.SansSerif,
-                        textAlign = TextAlign.Center
+                        placeholder = {
+                            Text(text = stringResource(id = R.string.your_email))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                        ),
+                        isError = emailState.error != null
                     )
+                    if (emailState.error != "") {
+                        Text(
+                            text = emailState.error ?: "",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = passwordState.text,
+                        onValueChange = {
+                            viewModel.setPassword(it)
+                        },
+                        label = { Text(stringResource(id = R.string.your_password)) },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isError = passwordState.error != null,
+                        trailingIcon = {
+                            val image = if (passwordVisible)
+                                Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff
+                            // Localized description for accessibility services
+                            val description =
+                                if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                    R.string.show_password
+                                )
+
+                            // Toggle button to hide or display password
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, description)
+                            }
+                        }
+                    )
+                    if (passwordState.error != "") {
+                        Text(
+                            text = passwordState.error ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = repeatPasswordState.text,
+                        onValueChange = {
+                            viewModel.setRepeatPassword(it)
+                        },
+                        label = { Text(stringResource(id = R.string.your_repeat_password)) },
+                        visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isError = repeatPasswordState.error != null,
+                        trailingIcon = {
+                            val image = if (repeatPasswordVisible)
+                                Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff
+                            // Localized description for accessibility services
+                            val description =
+                                if (repeatPasswordVisible) stringResource(R.string.hide_repeat_password) else stringResource(
+                                    R.string.show_repeat_password
+                                )
+
+                            // Toggle button to hide or display password
+                            IconButton(onClick = {
+                                repeatPasswordVisible = !repeatPasswordVisible
+                            }) {
+                                Icon(imageVector = image, description)
+                            }
+                        }
+                    )
+                    if (repeatPasswordState.error != "") {
+                        Text(
+                            text = repeatPasswordState.error ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(onClick = {
+                            navigator.navigate(PrivacyScreenDestination)
+                        }) {
+                            Text(
+                                text = stringResource(id = R.string.privacy),
+                                color = Color.Black
+                            )
+                        }
+
+                        TextButton(onClick = {
+                            navigator.navigate(ForgotPasswordScreenDestination)
+                        }) {
+                            Text(
+                                text = stringResource(id = R.string.forgot_password),
+                                color = Color.Black
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            viewModel.register()
+                        },
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Purple700,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            text = stringResource(id = R.string.login),
+                            textAlign = TextAlign.Center,
+                            fontSize = 18.sp
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+                            navigator.popBackStack()
+                            navigator.navigate(LoginScreenDestination)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(color = Color.Black)
+                                ) {
+                                    append(stringResource(R.string.already_have_an_account))
+                                }
+                                append(" ")
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = PurpleBg,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                ) {
+                                    append(stringResource(R.string.sign_in))
+                                }
+                            },
+                            fontFamily = FontFamily.SansSerif,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }

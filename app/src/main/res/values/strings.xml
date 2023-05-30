@@ -13,10 +13,6 @@
     <string name="register">Register</string>
     <string name="privacy">Privacy</string>
 
-    <string name="email_empty">Email cannot be empty</string>
-    <string name="password_empty">Password cannot be empty</string>
-    <string name="email_password_empty">Email and Password cannot be empty</string>
-
     <string name="signing_up">Signing up</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="repeat_password">repeat password</string>
@@ -25,22 +21,19 @@
     <string name="posts">Posts</string>
     <string name="add_post">Add Post</string>
 
-    <string name="post_title">Title</string>
-    <string name="your_post_title">Post title</string>
-    <string name="post_text">Text</string>
-    <string name="your_post_text">Post text</string>
+    <string name="title">Title</string>
+    <string name="text">Text</string>
     <string name="send">Send</string>
 
     <string name="comments">Comments</string>
     <string name="comment">Comment</string>
     <string name="add_comment">Add Comment</string>
-    <string name="comment_text">Text</string>
-    <string name="your_comment_text">Comment text</string>
 
 
     <string name="lorem_ipsum_title">Lorem Ipsum</string>
     <string name="lorem_ipsum_description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
     <string name="lorem_ipsum_comment">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </string>
+
     <string name="no_posts_found">No posts found</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_in">Sign In</string>
@@ -50,5 +43,6 @@
     <string name="show_repeat_password">Show repeat password</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
+    <string name="new_post">New post</string>
 
 </resources>

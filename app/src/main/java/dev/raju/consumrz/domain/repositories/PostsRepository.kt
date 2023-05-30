@@ -1,5 +1,6 @@
 package dev.raju.consumrz.domain.repositories
 
+import dev.raju.consumrz.data.local.models.PostRequest
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.utils.Resource
 
@@ -8,4 +9,5 @@ import dev.raju.consumrz.utils.Resource
  */
 interface PostsRepository {
     suspend fun loadPosts(): Resource<List<Post>>
+    suspend fun addPost(postRequest: PostRequest): Resource<Unit>
 }

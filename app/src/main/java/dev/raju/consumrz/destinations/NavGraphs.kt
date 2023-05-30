@@ -16,6 +16,7 @@ object NavGraphs {
             PrivacyScreenDestination,
             RegisterScreenDestination,
             PostsScreenDestination,
+            AddPostScreenDestination
         )
     )
 }
