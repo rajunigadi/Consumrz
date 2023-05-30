@@ -5,13 +5,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
-import dev.raju.data.local.UserDao
-import dev.raju.data.repositories.UserRepositoryImpl
-import dev.raju.domain.repositories.DatastoreRepository
-import dev.raju.domain.repositories.UserRepository
-import dev.raju.domain.usecases.UserUseCase
-import dev.raju.domain.usecases.UserUseCaseImpl
-import dev.raju.domain.utils.DispatcherProvider
+import dev.raju.consumrz.data.local.AuthPreferences
+import dev.raju.consumrz.data.repositories.UserRepositoryImpl
+import dev.raju.consumrz.domain.repositories.UserRepository
+import dev.raju.consumrz.domain.usecases.UserUseCase
+import dev.raju.consumrz.utils.DispatcherProvider
 
 /**
  * Created by Rajashekhar Vanahalli on 26 May, 2023
@@ -23,10 +21,9 @@ class UserModule {
     @Provides
     @ViewModelScoped
     fun providesUserRepository(
-        userDao: UserDao,
-        datastoreRepository: DatastoreRepository
+        preferences: AuthPreferences
     ): UserRepository {
-        return UserRepositoryImpl(userDao = userDao, datastoreRepository = datastoreRepository)
+        return UserRepositoryImpl(preferences = preferences)
     }
 
     @Provides
@@ -35,6 +32,6 @@ class UserModule {
         userRepository: UserRepository,
         dispatcherProvider: DispatcherProvider
     ): UserUseCase {
-        return UserUseCaseImpl(repository = userRepository, dispatcherProvider = dispatcherProvider)
+        return UserUseCase(repository = userRepository, dispatcherProvider = dispatcherProvider)
     }
 }

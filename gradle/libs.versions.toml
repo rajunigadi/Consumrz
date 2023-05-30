@@ -22,6 +22,8 @@ compose-hilt-navigation = "1.0.0"
 compose-coil = "2.3.0"
 compose-lottie = "5.2.0"
 
+compose-destination = "1.5.9-beta"
+
 # accompanist
 compose-accompanist = "0.28.0"
 
@@ -32,6 +34,8 @@ room = "2.2.6"
 datastore = "1.0.0"
 
 gson = "2.10.1"
+
+timber = "5.0.1"
 
 # test
 junit = "4.13.2"
@@ -64,6 +68,9 @@ compose-lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "
 compose-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "compose-accompanist"}
 compose-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "compose-accompanist" }
 
+compose-destination = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "compose-destination" }
+compose-destination-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destination" }
+
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 compose-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "compose-hilt-navigation" }
@@ -79,6 +86,8 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 
 # testing

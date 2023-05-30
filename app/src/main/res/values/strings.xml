@@ -9,6 +9,7 @@
     <string name="your_password">your password</string>
     <string name="login">Login</string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_password_title">Forgot Password</string>
     <string name="register">Register</string>
     <string name="privacy">Privacy</string>
 

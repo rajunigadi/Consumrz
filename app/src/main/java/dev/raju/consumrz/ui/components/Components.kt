@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -32,8 +33,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.raju.consumrz.R
-import dev.raju.consumrz.ui.theme.LightGray
-import dev.raju.consumrz.ui.theme.PurpleGrey80
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
@@ -57,37 +56,6 @@ fun ErrorDialog(message: String?) {
             }
         )
     }
-}
-
-@Composable
-fun AppLogo() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(LightGray),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = stringResource(id = R.string.app_name),
-            modifier = Modifier.padding(48.dp)
-        )
-    }
-}
-@Composable
-fun TextHeader(
-    label: String = stringResource(id = R.string.welcome_to_app),
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 24.dp)
-) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier,
-        maxLines = 1
-    )
 }
 
 @Composable

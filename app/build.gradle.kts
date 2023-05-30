@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp").version("1.6.10-1.0.4")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -55,9 +57,6 @@ kapt {
 }
 
 dependencies {
-    implementation(projects.data)
-    implementation(projects.domain)
-
     implementation(libs.core)
     implementation(libs.lifecycle.runtime)
 
@@ -87,6 +86,12 @@ dependencies {
 
     //datastore
     implementation(libs.datastore)
+
+    // Timber for logging
+    implementation(libs.timber)
+
+    implementation(libs.compose.destination)
+    ksp(libs.compose.destination.ksp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.integration)
