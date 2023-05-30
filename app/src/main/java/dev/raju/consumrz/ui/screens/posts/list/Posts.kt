@@ -1,6 +1,5 @@
 package dev.raju.consumrz.ui.screens.posts.list
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,16 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.raju.consumrz.R
-import dev.raju.consumrz.ui.components.ErrorDialog
 import dev.raju.consumrz.ui.components.TextHeader
 import dev.raju.consumrz.ui.navigation.NavRoute
 import dev.raju.consumrz.ui.screens.posts.add.AddPostRoute
-import dev.raju.consumrz.ui.screens.posts.detail.PostDetailRoute
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.domain.enitities.Post
-import dev.raju.domain.utils.UiState
 import kotlinx.coroutines.launch
 
 /**
@@ -76,37 +70,21 @@ object PostsRoute : NavRoute<PostsViewModel> {
 fun PostsScreen(
     viewModel: PostsViewModel
 ) {
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    LaunchedEffect(state) {
+    val posts by viewModel.posts.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
         viewModel.loadPosts()
     }
 
-    when (state) {
-        is UiState.Empty -> {
-
+    PostsComponent(
+        posts = posts,
+        onNewPostClick = {
+            viewModel.navigate(AddPostRoute.route)
+        },
+        onItemClick = {
+            viewModel.navigateTpPostDetail(it.id)
         }
-
-        is UiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is UiState.Failure -> {
-            ErrorDialog(message = "No data found")
-        }
-
-        is UiState.Success -> {
-            Log.d("aarna", "posts success")
-            PostsComponent(
-                posts = state.data,
-                onNewPostClick = {
-                    viewModel.navigate(AddPostRoute.route)
-                },
-                onItemClick = {
-                    viewModel.navigateTpPostDetail(it.id)
-                }
-            )
-        }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,7 +133,7 @@ private fun PostsComponent(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "No posts found",
+                        text = stringResource(R.string.no_posts_found),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
@@ -167,16 +145,6 @@ private fun PostsComponent(
                         .padding(paddingValues),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    /*val posts = mutableListOf<Pair<String, String>>()
-                    for (i in 1..20) {
-                        posts.add(
-                            Pair(
-                                stringResource(id = R.string.lorem_ipsum_title),
-                                stringResource(id = R.string.lorem_ipsum_description)
-                            )
-                        )
-                    }*/
-
                     LazyColumn(state = listState) {
                         items(items = posts) { post ->
                             PostItem(

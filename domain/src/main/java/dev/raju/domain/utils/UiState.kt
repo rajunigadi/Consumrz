@@ -1,5 +1,7 @@
 package dev.raju.domain.utils
 
+import java.lang.StringBuilder
+
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
@@ -30,6 +32,19 @@ data class ErrorCodable(val errorCode: Int, val errorMessage: String) {
 
         fun defaultErrors(e: Throwable): Array<ErrorCodable> {
             return arrayOf(ErrorCodable(errorCode = 1, errorMessage = e.message ?: "Something went wrong"))
+        }
+
+        fun errorsAsString(e: Throwable): String {
+            return e.message ?: "Something went wrong"
+        }
+
+        fun errorsAsString(errorCodables: Array<ErrorCodable>?): String {
+            val errorMessage = StringBuilder()
+            errorCodables?.forEach {
+                errorMessage.append(it.errorMessage)
+                errorMessage.append("\n")
+            }
+            return errorMessage.toString()
         }
     }
 }

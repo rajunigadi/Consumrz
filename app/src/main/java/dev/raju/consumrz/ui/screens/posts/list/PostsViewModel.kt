@@ -1,12 +1,12 @@
 package dev.raju.consumrz.ui.screens.posts.list
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.BaseViewModel
 import dev.raju.consumrz.ui.navigation.RouteNavigator
 import dev.raju.consumrz.ui.screens.posts.detail.PostDetailRoute
-import dev.raju.consumrz.ui.screens.register.RegisterRoute
 import dev.raju.domain.utils.UiState
 import dev.raju.domain.enitities.Post
 import dev.raju.domain.usecases.PostUseCase
@@ -29,23 +29,39 @@ class PostsViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
     private val useCase: PostUseCase
-): BaseViewModel(), RouteNavigator by routeNavigator {
+) : BaseViewModel(), RouteNavigator by routeNavigator {
 
-    private val _uiState = MutableStateFlow<UiState<List<Post>>>(UiState.Empty)
-    val uiState: StateFlow<UiState<List<Post>>> = _uiState.asStateFlow()
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> = _posts.asStateFlow()
 
     fun loadPosts() {
         job = viewModelScope.launch(dispatcherProvider.main + exceptionHandler) {
-            _uiState.value = UiState.Loading
             useCase
                 .getPosts()
                 .flowOn(dispatcherProvider.io)
                 .catch { e ->
-                    _uiState.value = UiState.Failure(ErrorCodable.defaultErrors(e))
+                    _error.value = ErrorCodable.errorsAsString(e)
                 }
-                .collect { loginState ->
-                    println("aarna: loginState: $loginState")
-                    _uiState.value = loginState
+                .collect { state ->
+                    println("aarna: state: $state")
+                    when (state) {
+                        is UiState.Empty -> {
+                            Log.d("aarna", "Empty")
+                        }
+
+                        is UiState.Loading -> {
+                            Log.d("aarna", "Loading")
+                        }
+
+                        is UiState.Failure -> {
+                            Log.d("aarna", "Failure")
+                            _error.value = ErrorCodable.errorsAsString(state.errrors)
+                        }
+
+                        is UiState.Success -> {
+                            _posts.value = state.data ?: emptyList()
+                        }
+                    }
                 }
         }
     }
