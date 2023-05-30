@@ -1,6 +1,5 @@
 package dev.raju.consumrz.data.repositories
 
-import coil.network.HttpException
 import dev.raju.consumrz.data.local.AuthPreferences
 import dev.raju.consumrz.data.local.database.UserDao
 import dev.raju.consumrz.data.local.models.AuthRequest
@@ -26,7 +25,7 @@ class UserRepositoryImpl(
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
             Resource.Error("${e.message}")
         }
     }
@@ -42,7 +41,7 @@ class UserRepositoryImpl(
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
             Resource.Error("${e.message}")
         }
     }
@@ -58,7 +57,7 @@ class UserRepositoryImpl(
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
             Resource.Error("${e.message}")
         }
     }

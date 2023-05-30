@@ -13,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import dagger.hilt.android.AndroidEntryPoint
-import dev.raju.consumrz.destinations.NavGraphs
+import dev.raju.consumrz.ui.screens.NavGraphs
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 
 @AndroidEntryPoint

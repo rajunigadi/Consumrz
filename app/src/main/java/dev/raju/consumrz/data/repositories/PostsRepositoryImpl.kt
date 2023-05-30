@@ -1,6 +1,5 @@
 package dev.raju.consumrz.data.repositories
 
-import coil.network.HttpException
 import dev.raju.consumrz.data.local.database.PostDao
 import dev.raju.consumrz.data.local.models.PostRequest
 import dev.raju.consumrz.domain.model.Post
@@ -25,7 +24,7 @@ class PostsRepositoryImpl(
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
             Resource.Error("${e.message}")
         }
     }
@@ -40,7 +39,29 @@ class PostsRepositoryImpl(
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
+            Resource.Error("${e.message}")
+        }
+    }
+
+    override suspend fun editPost(postRequest: PostRequest): Resource<Unit> {
+        return try {
+            postDao.updatePost(Post(id = postRequest.id!!, title = postRequest.title, text = postRequest.text))
+            Resource.Success(Unit)
+        } catch (e: IOException) {
+            Resource.Error("${e.message}")
+        } catch (e: Exception) {
+            Resource.Error("${e.message}")
+        }
+    }
+
+    override suspend fun deletePost(post: Post): Resource<Unit> {
+        return try {
+            postDao.deletePost(post)
+            Resource.Success(Unit)
+        } catch (e: IOException) {
+            Resource.Error("${e.message}")
+        } catch (e: Exception) {
             Resource.Error("${e.message}")
         }
     }

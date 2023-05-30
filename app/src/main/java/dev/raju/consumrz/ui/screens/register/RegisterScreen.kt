@@ -65,15 +65,12 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
-import dev.raju.consumrz.destinations.ForgotPasswordScreenDestination
-import dev.raju.consumrz.destinations.LoginScreenDestination
-import dev.raju.consumrz.destinations.PrivacyScreenDestination
-import dev.raju.consumrz.destinations.RegisterScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.PrivacyScreenDestination
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.ui.theme.Purple700
 import dev.raju.consumrz.ui.theme.PurpleBg
 import dev.raju.consumrz.utils.UiEvents
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -300,7 +297,7 @@ fun RegisterScreen(
                         }
 
                         TextButton(onClick = {
-                            navigator.navigate(ForgotPasswordScreenDestination)
+                            //navigator.navigate(ForgotPasswordScreenDestination)
                         }) {
                             Text(
                                 text = stringResource(id = R.string.forgot_password),
@@ -361,13 +358,6 @@ fun RegisterScreen(
             }
         }
     }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LoginComponent() {
-
 }
 
 @Preview(showBackground = true)

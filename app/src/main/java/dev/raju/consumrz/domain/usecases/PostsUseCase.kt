@@ -1,6 +1,7 @@
 package dev.raju.consumrz.domain.usecases
 
 import dev.raju.consumrz.data.local.models.PostRequest
+import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.model.PostListResult
 import dev.raju.consumrz.domain.model.PostResult
 import dev.raju.consumrz.domain.repositories.PostsRepository
@@ -20,7 +21,7 @@ class PostsUseCase(
         )
     }
 
-    suspend fun addPost(
+    suspend fun addOrUpdatePost(
         id: Int? = null,
         title: String,
         text: String
@@ -44,12 +45,21 @@ class PostsUseCase(
             title = title.trim(),
             text = text.trim()
         )
-        if (id != null) {
+        return if (id != null) {
             postRequest.id = id
+            PostResult(
+                result = repository.editPost(postRequest)
+            )
+        } else {
+            PostResult(
+                result = repository.addPost(postRequest)
+            )
         }
+    }
 
+    suspend fun deletePost(post: Post): PostResult {
         return PostResult(
-            result = repository.addPost(postRequest)
+            result = repository.deletePost(post)
         )
     }
 }

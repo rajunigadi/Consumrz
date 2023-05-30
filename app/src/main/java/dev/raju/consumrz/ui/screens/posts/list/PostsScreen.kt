@@ -48,13 +48,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
-import dev.raju.consumrz.destinations.AddPostScreenDestination
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
@@ -65,7 +67,7 @@ import kotlinx.coroutines.launch
  * Created by Rajashekhar Vanahalli on 30 May, 2023
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class)
 @Destination
 @Composable
 fun PostsScreen(
@@ -119,8 +121,7 @@ fun PostsScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            // new post screen
-                            navigator.navigate(AddPostScreenDestination)
+                            navigator.navigate(AddPostScreenDestination(post = null))
                         }
                     ) {
                         Icon(
@@ -174,7 +175,7 @@ fun PostsScreen(
                                                 scope.launch {
                                                     snackbarHostState.showSnackbar("Selected index: $selectedIndex")
                                                 }
-                                                //navigator.navigate(event.route)
+                                                navigator.navigate(PostDetailScreenDestination(post))
                                             })
                                 )
                             }

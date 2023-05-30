@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.raju.consumrz.destinations.PostsScreenDestination
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.usecases.PostsUseCase
 import dev.raju.consumrz.ui.screens.LoaderState
+import dev.raju.consumrz.ui.screens.destinations.PostsScreenDestination
 import dev.raju.consumrz.utils.DispatcherProvider
 import dev.raju.consumrz.utils.Resource
 import dev.raju.consumrz.utils.TextFieldState
@@ -63,7 +63,7 @@ class PostsViewModel @Inject constructor(
 
             when (postsResult) {
                 is Resource.Success -> {
-                    if(postsResult.data.isNullOrEmpty()) {
+                    if (postsResult.data.isNullOrEmpty()) {
                         _eventFlow.emit(
                             UiEvents.SnackbarEvent("No posts found")
                         )
@@ -71,6 +71,7 @@ class PostsViewModel @Inject constructor(
                         _posts.emit(postsResult.data)
                     }
                 }
+
                 is Resource.Error -> {
                     Timber.tag("aarna").d(postsResult.message)
                     _eventFlow.emit(
@@ -79,6 +80,7 @@ class PostsViewModel @Inject constructor(
                         )
                     )
                 }
+
                 else -> {
 
                 }
@@ -86,11 +88,12 @@ class PostsViewModel @Inject constructor(
         }
     }
 
-    fun addPost() {
+    fun addPost(id: Int? = null) {
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
 
-            val addPostResult = postsUseCase.addPost(
+            val addPostResult = postsUseCase.addOrUpdatePost(
+                id = id,
                 title = titleState.value.text,
                 text = textState.value.text
             )
@@ -110,6 +113,7 @@ class PostsViewModel @Inject constructor(
                         UiEvents.NavigateEvent(PostsScreenDestination.route)
                     )
                 }
+
                 is Resource.Error -> {
                     Timber.tag("aarna").d(addPostResult.result.message)
                     _eventFlow.emit(
@@ -118,6 +122,45 @@ class PostsViewModel @Inject constructor(
                         )
                     )
                 }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun deletePost(post: Post) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            val addPostResult = postsUseCase.deletePost(post = post)
+
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            if (addPostResult.titleError != null) {
+                _titleState.value = titleState.value.copy(error = addPostResult.titleError)
+            }
+            if (addPostResult.textError != null) {
+                _textState.value = textState.value.copy(error = addPostResult.textError)
+            }
+
+            when (addPostResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateEvent(PostsScreenDestination.route)
+                    )
+                }
+
+                is Resource.Error -> {
+                    Timber.tag("aarna").d(addPostResult.result.message)
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            addPostResult.result.message ?: "Error!"
+                        )
+                    )
+                }
+
                 else -> {
 
                 }

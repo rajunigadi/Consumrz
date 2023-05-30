@@ -3,9 +3,9 @@ package dev.raju.consumrz.ui.screens.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.raju.consumrz.destinations.PostsScreenDestination
-import dev.raju.consumrz.destinations.LoginScreenDestination
 import dev.raju.consumrz.domain.usecases.UserUseCase
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.PostsScreenDestination
 import dev.raju.consumrz.utils.Resource
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.MutableSharedFlow

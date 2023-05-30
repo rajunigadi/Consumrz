@@ -35,6 +35,7 @@
     <string name="lorem_ipsum_comment">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </string>
 
     <string name="no_posts_found">No posts found</string>
+    <string name="no_comments_found">No comments found</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
@@ -44,5 +45,6 @@
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
     <string name="new_post">New post</string>
+    <string name="edit_post">Edit post</string>
 
 </resources>
