@@ -7,6 +7,7 @@ import dev.raju.consumrz.BaseViewModel
 import dev.raju.consumrz.ui.navigation.RouteNavigator
 import dev.raju.consumrz.ui.screens.posts.add.AddPostRoute
 import dev.raju.consumrz.ui.screens.posts.addcomment.AddCommentRoute
+import dev.raju.consumrz.ui.screens.posts.edit.EditPostRoute
 import dev.raju.domain.enitities.Post
 import dev.raju.domain.utils.UiState
 import dev.raju.domain.usecases.PostUseCase
@@ -58,8 +59,7 @@ class PostDetailViewModel @Inject constructor(
 
     fun navigateToUpdatePost(postId: Int) {
         job = viewModelScope.launch(dispatcherProvider.io + exceptionHandler) {
-            navigateToRoute(AddPostRoute.route)
-            //navigateToRoute(AddPostRoute.get(postId))
+            navigateToRoute(EditPostRoute.get(postId))
         }
     }
 

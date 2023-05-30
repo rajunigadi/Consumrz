@@ -28,6 +28,7 @@ import dev.raju.consumrz.R
 
 class Field(
     val name: String,
+    val value: String = "",
     val label: String,
     val placeholder: String,
     val keyboardType: KeyboardType = KeyboardType.Text,
@@ -36,7 +37,7 @@ class Field(
         // do nothing
     }
 ) {
-    var textState: String by mutableStateOf("")
+    var textState: String by mutableStateOf(value)
     var labelState: String by mutableStateOf(label)
     var errorState: Boolean by mutableStateOf(false)
 
