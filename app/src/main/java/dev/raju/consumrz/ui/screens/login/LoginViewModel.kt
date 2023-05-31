@@ -15,7 +15,6 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -27,8 +26,8 @@ class LoginViewModel @Inject constructor(
     private val userUseCase: UserUseCase
 ) : ViewModel() {
 
-    private var _loginState = mutableStateOf(LoaderState())
-    val loginState: State<LoaderState> = _loginState
+    private var _loaderState = mutableStateOf(LoaderState())
+    val loaderState: State<LoaderState> = _loaderState
 
     private val _eventFlow = MutableSharedFlow<UiEvents>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -49,14 +48,14 @@ class LoginViewModel @Inject constructor(
 
     fun signInUser() {
         viewModelScope.launch(dispatcherProvider.io) {
-            _loginState.value = loginState.value.copy(isLoading = false)
+            _loaderState.value = loaderState.value.copy(isLoading = false)
 
             val loginResult = userUseCase.signIn(
                 email = emailState.value.text,
                 password = passwordState.value.text
             )
 
-            _loginState.value = loginState.value.copy(isLoading = false)
+            _loaderState.value = loaderState.value.copy(isLoading = false)
 
             if (loginResult.emailError != null) {
                 _emailState.value = emailState.value.copy(error = loginResult.emailError)
@@ -71,14 +70,15 @@ class LoginViewModel @Inject constructor(
                         UiEvents.NavigateEvent(PostsScreenDestination.route)
                     )
                 }
+
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(loginResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             loginResult.result.message ?: "Error!"
                         )
                     )
                 }
+
                 else -> {
 
                 }

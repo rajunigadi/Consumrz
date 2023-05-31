@@ -65,9 +65,10 @@ fun LoginScreen(
     navigator: DestinationsNavigator
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
+    val loaderState = viewModel.loaderState.value
     val emailState = viewModel.emailState.value
     val passwordState = viewModel.passwordState.value
-    val loginState = viewModel.loginState.value
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -118,7 +119,7 @@ fun LoginScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (loginState.isLoading) {
+                if (loaderState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 Spacer(modifier = Modifier.height(16.dp))

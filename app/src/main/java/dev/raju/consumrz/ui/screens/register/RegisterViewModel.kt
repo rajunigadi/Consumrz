@@ -15,20 +15,16 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val userUseCase: UserUseCase
 ) : ViewModel() {
 
-    private var _loginState = mutableStateOf(LoaderState())
-    val loginState: State<LoaderState> = _loginState
+    private var _loaderState = mutableStateOf(LoaderState())
+    val loaderState: State<LoaderState> = _loaderState
 
     private val _eventFlow = MutableSharedFlow<UiEvents>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -70,7 +66,7 @@ class RegisterViewModel @Inject constructor(
 
     fun register() {
         viewModelScope.launch(dispatcherProvider.io) {
-            _loginState.value = loginState.value.copy(isLoading = false)
+            _loaderState.value = loaderState.value.copy(isLoading = false)
 
             val registerResult = userUseCase.register(
                 firstName = firstNameState.value.text,
@@ -80,7 +76,7 @@ class RegisterViewModel @Inject constructor(
                 repeatPassword = repeatPasswordState.value.text
             )
 
-            _loginState.value = loginState.value.copy(isLoading = false)
+            _loaderState.value = loaderState.value.copy(isLoading = false)
 
             if (registerResult.firstNameError != null) {
                 _firstNameState.value = firstNameState.value.copy(error = registerResult.firstNameError)
@@ -108,7 +104,6 @@ class RegisterViewModel @Inject constructor(
                     )
                 }
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(registerResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             registerResult.result.message ?: "Error!"
