@@ -95,7 +95,7 @@ fun AddCommentScreen(
                     navigator.popBackStack() // clear login stack
                     navigator.navigate(event.route)
                     snackbarHostState.showSnackbar(
-                        message = "New post added successfully",
+                        message = "New comment added successfully",
                         duration = SnackbarDuration.Short
                     )
                 }
