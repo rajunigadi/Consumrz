@@ -38,6 +38,7 @@ import dev.raju.consumrz.ui.components.ConsumrzPasswordTextField
 import dev.raju.consumrz.ui.components.ConsumrzTextButton
 import dev.raju.consumrz.ui.components.ConsumrzTextField
 import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.RegisterScreenDestination
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
@@ -52,10 +53,9 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun RegisterScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val viewModel: RegisterViewModel = hiltViewModel()
-
     val loaderState = viewModel.loaderState.value
 
     val firstNameState = viewModel.firstNameState.value
@@ -195,7 +195,7 @@ fun RegisterScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     ConsumrzButton(
-                        text = stringResource(id = R.string.sign_in),
+                        text = stringResource(id = R.string.sign_up),
                         onClick = {
                             viewModel.register()
                         }
@@ -206,7 +206,7 @@ fun RegisterScreen(
                         styledText = stringResource(R.string.sign_in),
                         onClick = {
                             navigator.popBackStack()
-                            navigator.navigate(RegisterScreenDestination)
+                            navigator.navigate(LoginScreenDestination)
                         }
                     )
                 }

@@ -8,8 +8,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.usecases.PostsUseCase
+import dev.raju.consumrz.domain.usecases.UserUseCase
 import dev.raju.consumrz.ui.screens.LoaderState
-import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PostsScreenDestination
 import dev.raju.consumrz.utils.DispatcherProvider
 import dev.raju.consumrz.utils.Resource
@@ -30,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PostsViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
-    private val postsUseCase: PostsUseCase
+    private val userUseCase: UserUseCase,
+    private val postsUseCase: PostsUseCase,
 ) : ViewModel() {
 
     private var _loaderState = mutableStateOf(LoaderState())
@@ -60,7 +62,10 @@ class PostsViewModel @Inject constructor(
         _textState.value = textState.value.copy(text = value, error = null)
     }
 
-    fun getPosts() {
+    private val _modifyState = mutableStateOf(false)
+    val modifyState: State<Boolean> = _modifyState
+
+    fun loadPosts() {
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
             val postsResult = postsUseCase.loadPosts().result
@@ -69,9 +74,7 @@ class PostsViewModel @Inject constructor(
             when (postsResult) {
                 is Resource.Success -> {
                     if (postsResult.data.isNullOrEmpty()) {
-                        _eventFlow.emit(
-                            UiEvents.SnackbarEvent("No posts found")
-                        )
+                        _posts.emit(emptyList())
                     } else {
                         _posts.emit(postsResult.data)
                     }
@@ -93,15 +96,50 @@ class PostsViewModel @Inject constructor(
         }
     }
 
-    fun addPost(id: Int? = null) {
+    fun logout() {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+            val logoutResult = userUseCase.logout().result
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+
+            when (logoutResult) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateEvent(LoginScreenDestination.route)
+                    )
+                }
+
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvents.SnackbarEvent(
+                            logoutResult.message ?: "Error!"
+                        )
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun addPost(post: Post?) {
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
 
-            val addPostResult = postsUseCase.addOrUpdatePost(
-                id = id,
-                title = titleState.value.text,
-                text = textState.value.text
-            )
+            val newPost = if(post == null) {
+                Post(
+                    title = titleState.value.text,
+                    text = textState.value.text
+                )
+            } else {
+                post.title = titleState.value.text
+                post.text = textState.value.text
+                post
+            }
+
+            val addPostResult = postsUseCase.addOrUpdatePost(newPost)
 
             _loaderState.value = loaderState.value.copy(isLoading = false)
 

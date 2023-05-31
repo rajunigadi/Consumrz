@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -44,6 +45,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,6 +58,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.components.ConsumrzActionIconButton
 import dev.raju.consumrz.ui.screens.destinations.AddCommentScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
@@ -72,9 +76,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun PostDetailScreen(
     navigator: DestinationsNavigator,
+    viewModel: PostsViewModel = hiltViewModel(),
     post: Post
 ) {
-    val viewModel: PostsViewModel = hiltViewModel()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -125,29 +129,23 @@ fun PostDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            // new post screen
-                            navigator.navigate(AddPostScreenDestination(post = post))
-                        }
-                    ) {
-                        Icon(
+                    if(post.enableModify) {
+                        ConsumrzActionIconButton(
                             imageVector = Icons.Filled.Edit,
-                            contentDescription = "Edit"
+                            contentDescription = stringResource(R.string.edit),
+                            onClick = {
+                                navigator.navigate(AddPostScreenDestination(post = post))
+                            }
                         )
-                    }
-                    IconButton(
-                        onClick = {
-                            // new post screen
-                            viewModel.deletePost(post = post)
-                        }
-                    ) {
-                        Icon(
+                        ConsumrzActionIconButton(
                             imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete"
+                            contentDescription = stringResource(R.string.delete),
+                            onClick = {
+                                viewModel.deletePost(post = post)
+                            }
                         )
                     }
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -174,7 +172,7 @@ fun PostDetailScreen(
                     Spacer(modifier = Modifier.padding(vertical = 4.dp))
                     Text(
                         text = post.text,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
                             .align(Alignment.Start)
                     )
@@ -227,6 +225,8 @@ fun PostDetailScreen(
                             LazyColumn(state = listState) {
                                 items(items = comments) { comment ->
                                     CommentItem(
+                                        navigator = navigator,
+                                        viewModel = viewModel,
                                         comment = comment,
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -240,7 +240,12 @@ fun PostDetailScreen(
                                                     scope.launch {
                                                         snackbarHostState.showSnackbar("Selected index: $selectedIndex")
                                                     }
-                                                    navigator.navigate(AddCommentScreenDestination(postId = post.id, comment = comment))
+                                                    navigator.navigate(
+                                                        AddCommentScreenDestination(
+                                                            postId = post.id,
+                                                            comment = comment
+                                                        )
+                                                    )
                                                 })
                                     )
                                 }
@@ -255,6 +260,8 @@ fun PostDetailScreen(
 
 @Composable
 fun CommentItem(
+    navigator: DestinationsNavigator,
+    viewModel: PostsViewModel,
     comment: Comment,
     modifier: Modifier
 ) {
@@ -271,10 +278,56 @@ fun CommentItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = comment.username,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f, fill = false),
+                    textAlign = TextAlign.Start,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if(comment.enableModify) {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        ConsumrzActionIconButton(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            onClick = {
+                                navigator.navigate(
+                                    AddCommentScreenDestination(
+                                        postId = comment.postId,
+                                        comment = comment
+                                    )
+                                )
+                            }
+                        )
+                        ConsumrzActionIconButton(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.delete),
+                            onClick = {
+                                viewModel.deleteComment(comment = comment)
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = comment.text,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.Start)
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(vertical = 4.dp),
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -288,7 +341,7 @@ fun PostDetailScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            PostDetailScreen(EmptyDestinationsNavigator, Post(id = 1, title = "", text = ""))
+            //PostDetailScreen(EmptyDestinationsNavigator, Post(id = 1, title = "", text = ""))
         }
     }
 }

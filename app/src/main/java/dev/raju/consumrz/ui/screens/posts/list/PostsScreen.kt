@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +48,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,8 +60,12 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.components.ConsumrzActionIconButton
+import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.SplashScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
@@ -71,9 +80,9 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun PostsScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: PostsViewModel = hiltViewModel()
 ) {
-    val viewModel: PostsViewModel = hiltViewModel()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -82,7 +91,7 @@ fun PostsScreen(
     val posts by viewModel.posts.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
-        viewModel.getPosts()
+        viewModel.loadPosts()
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvents.SnackbarEvent -> {
@@ -95,11 +104,10 @@ fun PostsScreen(
                 }
 
                 is UiEvents.NavigateEvent -> {
+                    if (event.route == LoginScreenDestination.route) {
+                        navigator.popBackStack()
+                    }
                     navigator.navigate(event.route)
-                    snackbarHostState.showSnackbar(
-                        message = "Posts loaded successfully",
-                        duration = SnackbarDuration.Short
-                    )
                 }
             }
         }
@@ -119,16 +127,20 @@ fun PostsScreen(
                     )
                 },
                 actions = {
-                    IconButton(
+                    ConsumrzActionIconButton(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.add),
                         onClick = {
                             navigator.navigate(AddPostScreenDestination(post = null))
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Add"
-                        )
-                    }
+                    )
+                    ConsumrzActionIconButton(
+                        imageVector = Icons.Filled.Logout,
+                        contentDescription = stringResource(R.string.logout),
+                        onClick = {
+                            viewModel.logout()
+                        }
+                    )
                 }
             )
         },
@@ -163,6 +175,8 @@ fun PostsScreen(
                         LazyColumn(state = listState) {
                             items(items = posts) { post ->
                                 PostItem(
+                                    navigator = navigator,
+                                    viewModel = viewModel,
                                     post = post,
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -189,6 +203,8 @@ fun PostsScreen(
 
 @Composable
 fun PostItem(
+    navigator: DestinationsNavigator,
+    viewModel: PostsViewModel,
     post: Post,
     modifier: Modifier
 ) {
@@ -205,16 +221,47 @@ fun PostItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = post.title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.align(Alignment.Start)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = post.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1f, fill = false),
+                    textAlign = TextAlign.Start,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if(post.enableModify) {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        ConsumrzActionIconButton(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            onClick = {
+                                navigator.navigate(AddPostScreenDestination(post = post))
+                            }
+                        )
+                        ConsumrzActionIconButton(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.delete),
+                            onClick = {
+                                viewModel.deletePost(post = post)
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = post.text,
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.align(Alignment.Start)
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.align(Alignment.Start).padding(vertical = 4.dp),
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -228,7 +275,60 @@ fun PostsPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            PostsScreen(EmptyDestinationsNavigator)
+            //PostsScreen(EmptyDestinationsNavigator)
+            Card(
+                border = BorderStroke(1.dp, Color.Black),
+                colors = CardDefaults.cardColors(containerColor = Transparent),
+                //modifier = modifier,
+                shape = RectangleShape
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "post.titlehgjhgjhggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.align(Alignment.CenterVertically).weight(1f, fill = false),
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            ConsumrzActionIconButton(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = stringResource(R.string.edit),
+                                onClick = {
+                                    //navigator.navigate(AddPostScreenDestination(post = post))
+                                }
+                            )
+                            ConsumrzActionIconButton(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                onClick = {
+                                    //viewModel.deletePost(post = post)
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = "post.text",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.align(Alignment.Start).padding(vertical = 4.dp)
+                    )
+                }
+            }
         }
     }
 }

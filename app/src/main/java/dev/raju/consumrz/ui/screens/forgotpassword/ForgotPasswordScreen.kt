@@ -34,6 +34,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
+import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
@@ -51,21 +52,11 @@ fun ForgotPasswordScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(id = R.string.forgot_password_title)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navigator.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
+            ConsumrzTopAppBar(
+                text = stringResource(id = R.string.forgot_password_title),
+                onNavigationIconClick = {
+                    navigator.navigateUp()
                 }
-
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }

@@ -5,15 +5,9 @@ import dev.raju.consumrz.domain.model.AuthResult
 import dev.raju.consumrz.domain.model.SignInResult
 import dev.raju.consumrz.domain.model.User
 import dev.raju.consumrz.domain.repositories.UserRepository
-import dev.raju.consumrz.utils.DispatcherProvider
-
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 
 class UserUseCase(
-    private val repository: UserRepository,
-    private val dispatcherProvider: DispatcherProvider
+    private val repository: UserRepository
 ) {
     suspend fun isUserLoggedIn(): AuthResult {
         return AuthResult(
@@ -21,11 +15,17 @@ class UserUseCase(
         )
     }
 
+    suspend fun logout(): AuthResult {
+        return AuthResult(
+            result = repository.logout()
+        )
+    }
+
     suspend fun signIn(
         email: String,
         password: String
     ): AuthResult {
-        val emailError = if (email.isBlank()) "Username cannot be blank" else null
+        val emailError = if (email.isBlank()) "Email cannot be blank" else null
         val passwordError = if (password.isBlank()) "Password cannot be blank" else null
 
         if (emailError != null) {

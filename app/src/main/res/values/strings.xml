@@ -26,6 +26,9 @@
     <string name="add_post">Add Post</string>
 
     <string name="title">Title</string>
+    <string name="your_post_title">your post title</string>
+    <string name="your_post_text">your post text</string>
+    <string name="your_comment_text">your comment text</string>
     <string name="text">Text</string>
     <string name="send">Send</string>
 
@@ -53,5 +56,9 @@
 
     <string name="new_comment">New comment</string>
     <string name="edit_comment">Edit comment</string>
+    <string name="add">Add</string>
+    <string name="logout">Logout</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
 
 </resources>

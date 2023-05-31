@@ -10,11 +10,7 @@ import dev.raju.consumrz.data.local.database.UserDao
 import dev.raju.consumrz.data.repositories.UserRepositoryImpl
 import dev.raju.consumrz.domain.repositories.UserRepository
 import dev.raju.consumrz.domain.usecases.UserUseCase
-import dev.raju.consumrz.utils.DispatcherProvider
 
-/**
- * Created by Rajashekhar Vanahalli on 26 May, 2023
- */
 @Module
 @InstallIn(ViewModelComponent::class)
 class UserModule {
@@ -31,9 +27,8 @@ class UserModule {
     @Provides
     @ViewModelScoped
     fun providesUserUseCase(
-        userRepository: UserRepository,
-        dispatcherProvider: DispatcherProvider
+        userRepository: UserRepository
     ): UserUseCase {
-        return UserUseCase(repository = userRepository, dispatcherProvider = dispatcherProvider)
+        return UserUseCase(repository = userRepository)
     }
 }

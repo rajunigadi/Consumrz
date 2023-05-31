@@ -13,13 +13,13 @@ import java.io.IOException
 class AuthPreferences(
     private val dataStore: DataStore<Preferences>
 ) {
-    suspend fun saveAuthToken(loginToken: String) {
+    suspend fun saveEmail(email: String) {
         dataStore.edit { pref ->
-            pref[AUTH_KEY] = setOf(loginToken)
+            pref[AUTH_KEY] = email
         }
     }
 
-    suspend fun getAuthToken(): Result<Set<String>> {
+    suspend fun getEmail(): Result<String> {
         return Result.runCatching {
             val flow = dataStore.data
                 .catch { exception ->
@@ -37,8 +37,14 @@ class AuthPreferences(
                     // Get our name value, defaulting to false if not set
                     preferences[AUTH_KEY]
                 }
-            val value = flow.firstOrNull() ?: emptySet() // we only care about the 1st value
+            val value = flow.firstOrNull() ?: "" // we only care about the 1st value
             value
+        }
+    }
+
+    suspend fun clearPreferences() {
+        dataStore.edit { pref ->
+            pref.clear()
         }
     }
 }

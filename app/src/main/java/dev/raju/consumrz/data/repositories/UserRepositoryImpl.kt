@@ -18,7 +18,7 @@ class UserRepositoryImpl(
 
     override suspend fun isUserLoggedIn(): Resource<Unit> {
         return try {
-            if (preferences.getAuthToken().getOrDefault(emptySet()).isEmpty()) {
+            if (preferences.getEmail().getOrDefault("").isEmpty()) {
                 Resource.Error("User is not logged In")
             } else {
                 Resource.Success(Unit)
@@ -34,7 +34,7 @@ class UserRepositoryImpl(
         return try {
             val users = userDao.findUserByEmail(email = loginRequest.email)
             if ((users?.isNotEmpty() == true) && (users[0].email == loginRequest.email)) {
-                preferences.saveAuthToken(users[0].email)
+                preferences.saveEmail(users[0].email)
                 Resource.Success(Unit)
             } else {
                 Resource.Error("Unable to sign in with user credentials")
@@ -46,11 +46,22 @@ class UserRepositoryImpl(
         }
     }
 
+    override suspend fun logout(): Resource<Unit> {
+        return try {
+            preferences.clearPreferences()
+            Resource.Success(Unit)
+        } catch (e: IOException) {
+            Resource.Error("${e.message}")
+        } catch (e: Exception) {
+            Resource.Error("${e.message}")
+        }
+    }
+
     override suspend fun register(user: User): Resource<Unit> {
         return try {
             val rowId = userDao.addUser(user)
             if(rowId > 0) {
-                preferences.saveAuthToken(user.email)
+                preferences.saveEmail(user.email)
                 Resource.Success(Unit)
             } else {
                 Resource.Error("Unable to register with user credentials")

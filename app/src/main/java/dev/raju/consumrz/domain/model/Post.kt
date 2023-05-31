@@ -14,9 +14,14 @@ import kotlinx.android.parcel.Parcelize
 data class Post(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val title: String,
-    val text: String,
+    var userId: Int = 0,
+    var username: String = "",
+    var title: String,
+    var text: String
 ): Parcelable {
     @Ignore
     var comments: List<Comment>? = null
+
+    @Ignore
+    var enableModify = false
 }

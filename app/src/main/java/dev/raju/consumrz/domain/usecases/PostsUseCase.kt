@@ -7,15 +7,13 @@ import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.model.PostListResult
 import dev.raju.consumrz.domain.model.PostResult
 import dev.raju.consumrz.domain.repositories.PostsRepository
-import dev.raju.consumrz.utils.DispatcherProvider
 
 /**
  * Created by Rajashekhar Vanahalli on 25 May, 2023
  */
 
 class PostsUseCase(
-    private val repository: PostsRepository,
-    private val dispatcherProvider: DispatcherProvider
+    private val repository: PostsRepository
 ) {
     suspend fun loadPosts(): PostListResult {
         return PostListResult(
@@ -24,12 +22,10 @@ class PostsUseCase(
     }
 
     suspend fun addOrUpdatePost(
-        id: Int? = null,
-        title: String,
-        text: String
+        post: Post
     ): PostResult {
-        val titleError = if (title.isBlank()) "Title cannot be blank" else null
-        val textError = if (text.isBlank()) "Text cannot be blank" else null
+        val titleError = if (post.title.isBlank()) "Post title cannot be blank" else null
+        val textError = if (post.text.isBlank()) "Post text cannot be blank" else null
 
         if (titleError != null) {
             return PostResult(
@@ -43,20 +39,9 @@ class PostsUseCase(
             )
         }
 
-        val postRequest = PostRequest(
-            title = title.trim(),
-            text = text.trim()
+        return PostResult(
+            result = if(post.id > 0) repository.editPost(post) else repository.addPost(post)
         )
-        return if (id != null) {
-            postRequest.id = id
-            PostResult(
-                result = repository.editPost(postRequest)
-            )
-        } else {
-            PostResult(
-                result = repository.addPost(postRequest)
-            )
-        }
     }
 
     suspend fun deletePost(post: Post): PostResult {
@@ -70,10 +55,11 @@ class PostsUseCase(
             result = repository.loadComments(postId = postId)
         )
     }
+
     suspend fun addComment(
         comment: Comment
     ): PostResult {
-        val textError = if (comment.text.isBlank()) "Text cannot be blank" else null
+        val textError = if (comment.text.isBlank()) "Comment text cannot be blank" else null
 
         if (textError != null) {
             return PostResult(
@@ -89,7 +75,7 @@ class PostsUseCase(
     suspend fun editComment(
         comment: Comment
     ): PostResult {
-        val textError = if (comment.text.isBlank()) "Text cannot be blank" else null
+        val textError = if (comment.text.isBlank()) "Comment text cannot be blank" else null
 
         if (textError != null) {
             return PostResult(

@@ -5,16 +5,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import dev.raju.consumrz.data.local.AuthPreferences
 import dev.raju.consumrz.data.local.database.CommentDao
 import dev.raju.consumrz.data.local.database.PostDao
+import dev.raju.consumrz.data.local.database.UserDao
 import dev.raju.consumrz.data.repositories.PostsRepositoryImpl
 import dev.raju.consumrz.domain.repositories.PostsRepository
 import dev.raju.consumrz.domain.usecases.PostsUseCase
-import dev.raju.consumrz.utils.DispatcherProvider
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @Module
 @InstallIn(ViewModelComponent::class)
 class PostsModule {
@@ -22,18 +20,24 @@ class PostsModule {
     @Provides
     @ViewModelScoped
     fun providesPostsRepository(
+        authPreferences: AuthPreferences,
+        userDao: UserDao,
         postDao: PostDao,
         commentDao: CommentDao
     ): PostsRepository {
-        return PostsRepositoryImpl(postDao = postDao, commentDao = commentDao)
+        return PostsRepositoryImpl(
+            preferences = authPreferences,
+            userDao = userDao,
+            postDao = postDao,
+            commentDao = commentDao
+        )
     }
 
     @Provides
     @ViewModelScoped
     fun providesPostsUseCase(
-        postsRepository: PostsRepository,
-        dispatcherProvider: DispatcherProvider
+        postsRepository: PostsRepository
     ): PostsUseCase {
-        return PostsUseCase(repository = postsRepository, dispatcherProvider = dispatcherProvider)
+        return PostsUseCase(repository = postsRepository)
     }
 }

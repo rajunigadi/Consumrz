@@ -193,7 +193,6 @@ fun LoginScreen(
                     text = stringResource(R.string.don_t_have_an_account),
                     styledText = stringResource(R.string.sign_up),
                     onClick = {
-                        navigator.popBackStack()
                         navigator.navigate(RegisterScreenDestination)
                     }
                 )

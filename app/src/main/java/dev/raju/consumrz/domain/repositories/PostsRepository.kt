@@ -10,8 +10,8 @@ import dev.raju.consumrz.utils.Resource
  */
 interface PostsRepository {
     suspend fun loadPosts(): Resource<List<Post>>
-    suspend fun addPost(postRequest: PostRequest): Resource<Unit>
-    suspend fun editPost(postRequest: PostRequest): Resource<Unit>
+    suspend fun addPost(post: Post): Resource<Unit>
+    suspend fun editPost(post: Post): Resource<Unit>
     suspend fun deletePost(post: Post): Resource<Unit>
 
     suspend fun loadComments(postId: Int): Resource<List<Comment>>

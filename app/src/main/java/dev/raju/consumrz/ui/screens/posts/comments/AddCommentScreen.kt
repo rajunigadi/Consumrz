@@ -25,8 +25,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +47,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Comment
+import dev.raju.consumrz.ui.components.ConsumrzButton
+import dev.raju.consumrz.ui.components.ConsumrzTextField
 import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
@@ -60,16 +66,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddCommentScreen(
     navigator: DestinationsNavigator,
+    viewModel: PostsViewModel = hiltViewModel(),
     postId: Int,
     comment: Comment? = null
 ) {
-    val viewModel: PostsViewModel = hiltViewModel()
-    val titleState = viewModel.titleState.value
-    val textState = viewModel.textState.value
     val loaderState = viewModel.loaderState.value
+    val textState = viewModel.textState.value
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val isEdit = comment != null
+    var isEdit by rememberSaveable { mutableStateOf(comment != null) }
 
     LaunchedEffect(key1 = true) {
         if (comment != null) {
@@ -128,32 +133,23 @@ fun AddCommentScreen(
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = textState.text,
-                        onValueChange = {
+                    ConsumrzTextField(
+                        valueState = textState,
+                        placeholderText = stringResource(id = R.string.your_comment_text),
+                        labelText = stringResource(id = R.string.your_comment_text),
+                        onValueChanged = {
                             viewModel.setText(it)
                         },
-                        label = { Text(stringResource(id = R.string.text)) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             capitalization = KeyboardCapitalization.Sentences
-                        ),
-                        isError = textState.error != null,
-                    )
-                    if (textState.error != "") {
-                        Text(
-                            text = textState.error ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.fillMaxWidth()
                         )
-                    }
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
+                    ConsumrzButton(
+                        text = stringResource(id = R.string.send),
                         onClick = {
                             if(isEdit) {
                                 if (comment != null) {
@@ -163,22 +159,8 @@ fun AddCommentScreen(
                             } else {
                                 viewModel.addComment(Comment(postId = postId, text = textState.text))
                             }
-                        },
-                        shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Purple700,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            text = stringResource(id = R.string.send),
-                            textAlign = TextAlign.Center,
-                            fontSize = 18.sp
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
@@ -193,7 +175,7 @@ fun LoginPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AddCommentScreen(EmptyDestinationsNavigator, 0, Comment(0, 0, ""))
+            //AddCommentScreen(EmptyDestinationsNavigator, 0, Comment(0, 1, "",0, ""))
         }
     }
 }

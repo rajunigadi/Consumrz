@@ -2,6 +2,7 @@ package dev.raju.consumrz.domain.model
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
@@ -13,6 +14,11 @@ import kotlinx.android.parcel.Parcelize
 data class Comment(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
+    var userId: Int = 0,
+    var username: String = "",
     var postId: Int,
     var text: String
-): Parcelable
+): Parcelable {
+    @Ignore
+    var enableModify = false
+}
