@@ -52,6 +52,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -85,13 +86,18 @@ fun RegisterScreen(
     navigator: DestinationsNavigator
 ) {
     val viewModel: RegisterViewModel = hiltViewModel()
+
+    val loaderState = viewModel.loginState.value
+
+    val firstNameState = viewModel.firstNameState.value
+    val lastNameState = viewModel.lastNameState.value
     val emailState = viewModel.emailState.value
     val passwordState = viewModel.passwordState.value
-    val repeatPasswordState = viewModel.repeatPasswordState.value
-    val loginState = viewModel.loginState.value
-    val snackbarHostState = remember { SnackbarHostState() }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val repeatPasswordState = viewModel.repeatPasswordState.value
     var repeatPasswordVisible by rememberSaveable { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
@@ -140,7 +146,7 @@ fun RegisterScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
-        if (loginState.isLoading) {
+        if (loaderState.isLoading) {
             Column(
                 modifier = Modifier.padding(paddingValues)
             ) {
@@ -150,16 +156,6 @@ fun RegisterScreen(
             Column(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = stringResource(id = R.string.app_name),
-                    )
-                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -167,18 +163,62 @@ fun RegisterScreen(
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(id = R.string.signing_up),
-                        fontSize = 26.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Start
+                        value = firstNameState.text,
+                        onValueChange = {
+                            viewModel.setFirstName(it)
+                        },
+                        placeholder = {
+                            Text(text = stringResource(id = R.string.firstname))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            capitalization = KeyboardCapitalization.Words
+                        ),
+                        isError = firstNameState.error != null
                     )
+                    if (firstNameState.error != "") {
+                        Text(
+                            text = firstNameState.error ?: "",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = lastNameState.text,
+                        onValueChange = {
+                            viewModel.setLastName(it)
+                        },
+                        placeholder = {
+                            Text(text = stringResource(id = R.string.lastname))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            capitalization = KeyboardCapitalization.Words
+                        ),
+                        isError = lastNameState.error != null
+                    )
+                    if (lastNameState.error != "") {
+                        Text(
+                            text = lastNameState.error ?: "",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -282,30 +322,6 @@ fun RegisterScreen(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(onClick = {
-                            navigator.navigate(PrivacyScreenDestination)
-                        }) {
-                            Text(
-                                text = stringResource(id = R.string.privacy),
-                                color = Color.Black
-                            )
-                        }
-
-                        TextButton(onClick = {
-                            //navigator.navigate(ForgotPasswordScreenDestination)
-                        }) {
-                            Text(
-                                text = stringResource(id = R.string.forgot_password),
-                                color = Color.Black
-                            )
-                        }
-                    }
-
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
@@ -321,7 +337,7 @@ fun RegisterScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            text = stringResource(id = R.string.login),
+                            text = stringResource(id = R.string.register),
                             textAlign = TextAlign.Center,
                             fontSize = 18.sp
                         )

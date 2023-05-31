@@ -3,6 +3,8 @@
     <string name="common_error_message">Something went wrong</string>
 
     <string name="welcome_to_app">Welcome to App</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
     <string name="email">email</string>
     <string name="your_email">your email</string>
     <string name="password">password</string>

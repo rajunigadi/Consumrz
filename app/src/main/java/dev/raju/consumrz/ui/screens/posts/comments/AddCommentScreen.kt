@@ -150,8 +150,8 @@ fun AddCommentScreen(
                         },
                         label = { Text(stringResource(id = R.string.text)) },
                         keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Sentences,
-                            keyboardType = KeyboardType.Text
+                            keyboardType = KeyboardType.Text,
+                            capitalization = KeyboardCapitalization.Sentences
                         ),
                         isError = textState.error != null,
                     )

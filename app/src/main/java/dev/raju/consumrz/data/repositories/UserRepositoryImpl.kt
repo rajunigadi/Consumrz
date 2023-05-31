@@ -46,11 +46,11 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun register(registerRequest: AuthRequest): Resource<Unit> {
+    override suspend fun register(user: User): Resource<Unit> {
         return try {
-            val rowId = userDao.addUser(User(email = registerRequest.email, password = registerRequest.password))
+            val rowId = userDao.addUser(user)
             if(rowId > 0) {
-                preferences.saveAuthToken(registerRequest.email)
+                preferences.saveAuthToken(user.email)
                 Resource.Success(Unit)
             } else {
                 Resource.Error("Unable to register with user credentials")

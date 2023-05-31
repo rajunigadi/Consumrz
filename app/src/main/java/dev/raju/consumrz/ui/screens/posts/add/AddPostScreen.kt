@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -148,6 +149,7 @@ fun AddPostScreen(
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Sentences
                     ),
                     isError = titleState.error != null
                 )
@@ -171,7 +173,10 @@ fun AddPostScreen(
                         viewModel.setText(it)
                     },
                     label = { Text(stringResource(id = R.string.text)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Sentences
+                    ),
                     isError = textState.error != null,
                 )
                 if (textState.error != "") {
