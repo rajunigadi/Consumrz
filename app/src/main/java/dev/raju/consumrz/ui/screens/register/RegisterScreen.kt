@@ -66,6 +66,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
+import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PrivacyScreenDestination
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
@@ -126,21 +127,10 @@ fun RegisterScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.register),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navigator.navigateUp()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
+            ConsumrzTopAppBar(
+                text = stringResource(id = R.string.register),
+                onNavigationIconClick = {
+                    navigator.navigateUp()
                 }
             )
         },

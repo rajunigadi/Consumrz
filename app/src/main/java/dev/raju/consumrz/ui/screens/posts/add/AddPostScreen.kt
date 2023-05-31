@@ -48,6 +48,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Post
+import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.ui.theme.Purple700
@@ -104,19 +105,10 @@ fun AddPostScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if(isEdit) stringResource(R.string.edit_post) else stringResource(R.string.new_post),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
+            ConsumrzTopAppBar(
+                text = if(isEdit) stringResource(R.string.edit_post) else stringResource(R.string.new_post),
+                onNavigationIconClick = {
+                    navigator.navigateUp()
                 }
             )
         },
