@@ -4,7 +4,13 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp").version("1.6.10-1.0.4")
+    id("kotlin-parcelize")
 }
+
+/*kotlin {
+    jvmToolchain(19)
+}*/
 
 android {
     namespace = "dev.raju.consumrz"
@@ -30,23 +36,48 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion = "1.1.1"//libs.versions.compose.compiler.get()
     }
     packagingOptions {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
+    sourceSets {
+        getByName("debug") {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+            java.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        getByName("release") {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+            java.srcDir("build/generated/ksp/release/kotlin")
+        }
+    }
+    /*applicationVariants.configureEach {
+        println("name: $name")
+        kotlin.sourceSets {
+            getByName(name) {
+                kotlin.srcDir("build/generated/ksp/${name}/kotlin")
+                //kotlin.srcDirs("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+        java.sourceSets {
+            getByName(name) {
+                java.srcDir("build/generated/ksp/${name}/kotlin")
+                //kotlin.srcDirs("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+    }*/
 }
 
 // Allow references to generated code
@@ -55,9 +86,6 @@ kapt {
 }
 
 dependencies {
-    implementation(projects.data)
-    implementation(projects.domain)
-
     implementation(libs.core)
     implementation(libs.lifecycle.runtime)
 
@@ -72,12 +100,19 @@ dependencies {
     implementation(libs.compose.livedata)
     implementation(libs.compose.navigation)
 
-    implementation(libs.compose.coil)
-    implementation(libs.compose.lottie)
+    implementation("androidx.compose.ui:ui:1.1.1")
+    implementation("androidx.compose.material:material:1.1.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.1.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.6.0")
+
+    //implementation(libs.compose.coil)
+    //implementation(libs.compose.lottie)
 
     // dagger hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.compose.hilt.navigation)
 
     // room
@@ -87,6 +122,12 @@ dependencies {
 
     //datastore
     implementation(libs.datastore)
+
+    // Timber for logging
+    implementation(libs.timber)
+
+    implementation(libs.compose.destination)
+    ksp(libs.compose.destination.ksp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.integration)

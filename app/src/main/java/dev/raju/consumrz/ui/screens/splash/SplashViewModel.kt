@@ -1,67 +1,54 @@
 package dev.raju.consumrz.ui.screens.splash
 
-import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.raju.consumrz.BaseViewModel
-import dev.raju.consumrz.ui.navigation.RouteNavigator
-import dev.raju.consumrz.ui.screens.login.LoginRoute
-import dev.raju.consumrz.ui.screens.posts.list.PostsRoute
-import dev.raju.domain.utils.UiState
-import dev.raju.domain.enitities.LoginState
-import dev.raju.domain.usecases.UserUseCase
-import dev.raju.domain.utils.DispatcherProvider
-import dev.raju.domain.utils.ErrorCodable
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
+import dev.raju.consumrz.domain.usecases.UserUseCase
+import dev.raju.consumrz.ui.screens.LoaderState
+import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
+import dev.raju.consumrz.ui.screens.destinations.PostsScreenDestination
+import dev.raju.consumrz.utils.DispatcherProvider
+import dev.raju.consumrz.utils.Resource
+import dev.raju.consumrz.utils.UiEvents
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val routeNavigator: RouteNavigator,
     private val dispatcherProvider: DispatcherProvider,
-    private val useCase: UserUseCase
-) : BaseViewModel(), RouteNavigator by routeNavigator {
+    private val userUseCase: UserUseCase,
+) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<LoginState>>(UiState.Empty)
-    val uiState: StateFlow<UiState<LoginState>> = _uiState.asStateFlow()
+    private val _eventFlow = MutableSharedFlow<UiEvents>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
-    fun checkLogin() {
-        viewModelScope.launch() {
-            useCase
-                .checkLogin()
-                .flowOn(dispatcherProvider.io)
-                .catch { e ->
-                    _uiState.value = UiState.Failure(errrors = ErrorCodable.defaultErrors(e))
+    private var _loaderState = mutableStateOf(LoaderState())
+    val loaderState: State<LoaderState> = _loaderState
+
+    fun checkUserLoggedIn() {
+        viewModelScope.launch(dispatcherProvider.io) {
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+            val loginResult = userUseCase.isUserLoggedIn()
+            _loaderState.value = loaderState.value.copy(isLoading = false)
+            when (loginResult.result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateEvent(PostsScreenDestination.route)
+                    )
                 }
-                .collect { loginState ->
-                    println("aarna: loginState: $loginState")
-                    when (loginState) {
-                        is UiState.Empty -> {
-
-                        }
-
-                        is UiState.Loading -> {
-
-                        }
-
-                        is UiState.Failure -> {
-                            navigateToRoutePopUpTo(route = LoginRoute.route, popUpToRoute = SplashRoute.route)
-                        }
-
-                        is UiState.Success -> {
-                            navigateToRoutePopUpTo(route = PostsRoute.route, popUpToRoute = SplashRoute.route)
-                        }
-                    }
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvents.NavigateEvent(LoginScreenDestination.route)
+                    )
                 }
+                else -> {
+
+                }
+            }
         }
     }
 }
