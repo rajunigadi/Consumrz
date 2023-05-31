@@ -16,9 +16,6 @@ import androidx.compose.ui.unit.sp
 import dev.raju.consumrz.R
 import dev.raju.consumrz.ui.theme.Purple700
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
 @Composable
 fun ConsumrzButton(
     text: String = stringResource(id = R.string.send),

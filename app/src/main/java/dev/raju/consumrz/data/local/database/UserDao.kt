@@ -9,9 +9,6 @@ import androidx.room.Update
 import dev.raju.consumrz.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 @Dao
 interface UserDao {
 

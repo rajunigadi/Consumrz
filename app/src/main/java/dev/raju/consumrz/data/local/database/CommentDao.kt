@@ -8,9 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import dev.raju.consumrz.domain.model.Comment
 
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 @Dao
 interface CommentDao {
 

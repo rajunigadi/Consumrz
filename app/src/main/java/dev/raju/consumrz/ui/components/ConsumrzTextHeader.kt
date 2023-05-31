@@ -11,10 +11,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import dev.raju.consumrz.R
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
-
 @Composable
 fun ConsumrzTextHeader(
     text: String = stringResource(id = R.string.welcome_to_app),
@@ -22,7 +18,7 @@ fun ConsumrzTextHeader(
 ) {
     Text(
         modifier = modifier,
-        text = stringResource(id = R.string.welcome_to_app),
+        text = text,
         fontSize = 26.sp,
         color = Color.Black,
         fontWeight = FontWeight.Bold,

@@ -47,9 +47,6 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -91,6 +88,10 @@ fun AddPostScreen(
                         message = "New post added successfully",
                         duration = SnackbarDuration.Short
                     )
+                }
+
+                is UiEvents.NavigateUp -> {
+                    navigator.navigateUp()
                 }
             }
         }
@@ -168,7 +169,7 @@ fun AddPostScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() {
+fun AddPostScreenPreview() {
     ConsumrzTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

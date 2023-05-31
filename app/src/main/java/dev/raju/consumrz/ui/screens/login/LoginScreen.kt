@@ -54,17 +54,14 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun LoginScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
     val loaderState = viewModel.loaderState.value
     val emailState = viewModel.emailState.value
     val passwordState = viewModel.passwordState.value
@@ -85,12 +82,12 @@ fun LoginScreen(
                 }
 
                 is UiEvents.NavigateEvent -> {
-                    navigator.popBackStack() // clear login stack
+                    navigator.popBackStack()
                     navigator.navigate(event.route)
-                    snackbarHostState.showSnackbar(
-                        message = "Login Successful",
-                        duration = SnackbarDuration.Short
-                    )
+                }
+
+                is UiEvents.NavigateUp -> {
+                    navigator.navigateUp()
                 }
             }
         }

@@ -45,9 +45,6 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -57,7 +54,6 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val loaderState = viewModel.loaderState.value
-
     val firstNameState = viewModel.firstNameState.value
     val lastNameState = viewModel.lastNameState.value
     val emailState = viewModel.emailState.value
@@ -86,6 +82,10 @@ fun RegisterScreen(
                         message = "Registration Successful",
                         duration = SnackbarDuration.Short
                     )
+                }
+
+                is UiEvents.NavigateUp -> {
+                    navigator.navigateUp()
                 }
             }
         }
@@ -217,7 +217,7 @@ fun RegisterScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() {
+fun RegisterScreenPreview() {
     ConsumrzTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background

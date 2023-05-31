@@ -22,12 +22,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @HiltViewModel
 class PostsViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
@@ -62,9 +58,6 @@ class PostsViewModel @Inject constructor(
         _textState.value = textState.value.copy(text = value, error = null)
     }
 
-    private val _modifyState = mutableStateOf(false)
-    val modifyState: State<Boolean> = _modifyState
-
     fun loadPosts() {
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
@@ -81,7 +74,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(postsResult.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             postsResult.message ?: "Error!"
@@ -128,7 +120,7 @@ class PostsViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             _loaderState.value = loaderState.value.copy(isLoading = false)
 
-            val newPost = if(post == null) {
+            val newPost = if (post == null) {
                 Post(
                     title = titleState.value.text,
                     text = textState.value.text
@@ -158,7 +150,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(addPostResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             addPostResult.result.message ?: "Error!"
@@ -196,7 +187,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(addPostResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             addPostResult.result.message ?: "Error!"
@@ -229,7 +219,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(commentsResult.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             commentsResult.message ?: "Error!"
@@ -266,7 +255,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(addCommentResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             addCommentResult.result.message ?: "Error!"
@@ -303,7 +291,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(editResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             editResult.result.message ?: "Error!"
@@ -334,7 +321,6 @@ class PostsViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Timber.tag("aarna").d(deleteResult.result.message)
                     _eventFlow.emit(
                         UiEvents.SnackbarEvent(
                             deleteResult.result.message ?: "Error!"

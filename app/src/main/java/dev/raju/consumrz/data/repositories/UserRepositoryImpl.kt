@@ -8,9 +8,6 @@ import dev.raju.consumrz.domain.repositories.UserRepository
 import dev.raju.consumrz.utils.Resource
 import java.io.IOException
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 class UserRepositoryImpl(
     private val userDao: UserDao,
     private val preferences: AuthPreferences

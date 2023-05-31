@@ -22,9 +22,6 @@ import dev.raju.consumrz.utils.Constants.AUTH_PREFERENCES
 import dev.raju.consumrz.utils.Constants.CONSUMRZ_DATABASE
 import javax.inject.Singleton
 
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {

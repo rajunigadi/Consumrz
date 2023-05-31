@@ -67,9 +67,6 @@ import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class)
 @Destination
@@ -106,6 +103,10 @@ fun PostDetailScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+
+                is UiEvents.NavigateUp -> {
+                    navigator.navigateUp()
+                }
             }
         }
     }
@@ -129,7 +130,7 @@ fun PostDetailScreen(
                     }
                 },
                 actions = {
-                    if(post.enableModify) {
+                    if (post.enableModify) {
                         ConsumrzActionIconButton(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = stringResource(R.string.edit),
@@ -293,7 +294,7 @@ fun CommentItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if(comment.enableModify) {
+                if (comment.enableModify) {
                     Row(
                         horizontalArrangement = Arrangement.End,
                     ) {
@@ -341,7 +342,10 @@ fun PostDetailScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            //PostDetailScreen(EmptyDestinationsNavigator, Post(id = 1, title = "", text = ""))
+            PostDetailScreen(
+                navigator = EmptyDestinationsNavigator,
+                post = Post(id = 1, userId = 1, username = "", title = "", text = "")
+            )
         }
     }
 }

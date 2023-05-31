@@ -1,16 +1,11 @@
 package dev.raju.consumrz.domain.usecases
 
-import dev.raju.consumrz.data.local.models.PostRequest
 import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.CommentsListResult
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.model.PostListResult
 import dev.raju.consumrz.domain.model.PostResult
 import dev.raju.consumrz.domain.repositories.PostsRepository
-
-/**
- * Created by Rajashekhar Vanahalli on 25 May, 2023
- */
 
 class PostsUseCase(
     private val repository: PostsRepository

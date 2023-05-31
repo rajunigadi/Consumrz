@@ -11,9 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import dev.raju.consumrz.R
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConsumrzTopAppBar(

@@ -9,9 +9,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import dev.raju.consumrz.R
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
 @Composable
 fun ConsumrzActionIconButton(
     imageVector: ImageVector = Icons.Filled.Add,

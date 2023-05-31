@@ -1,11 +1,9 @@
 package dev.raju.consumrz.data.repositories
 
-import android.util.Log
 import dev.raju.consumrz.data.local.AuthPreferences
 import dev.raju.consumrz.data.local.database.CommentDao
 import dev.raju.consumrz.data.local.database.PostDao
 import dev.raju.consumrz.data.local.database.UserDao
-import dev.raju.consumrz.data.local.models.PostRequest
 import dev.raju.consumrz.domain.model.Comment
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.domain.model.User
@@ -13,9 +11,6 @@ import dev.raju.consumrz.domain.repositories.PostsRepository
 import dev.raju.consumrz.utils.Resource
 import java.io.IOException
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 class PostsRepositoryImpl(
     private val preferences: AuthPreferences,
     private val userDao: UserDao,

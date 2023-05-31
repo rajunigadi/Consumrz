@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -23,8 +24,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -61,20 +63,16 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dev.raju.consumrz.R
 import dev.raju.consumrz.domain.model.Post
 import dev.raju.consumrz.ui.components.ConsumrzActionIconButton
-import dev.raju.consumrz.ui.components.ConsumrzTopAppBar
 import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
-import dev.raju.consumrz.ui.screens.destinations.SplashScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
+import dev.raju.consumrz.ui.theme.PurpleBg
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class)
 @Destination
@@ -109,6 +107,10 @@ fun PostsScreen(
                     }
                     navigator.navigate(event.route)
                 }
+
+                is UiEvents.NavigateUp -> {
+                    navigator.navigateUp()
+                }
             }
         }
     }
@@ -128,23 +130,28 @@ fun PostsScreen(
                 },
                 actions = {
                     ConsumrzActionIconButton(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = stringResource(R.string.add),
-                        onClick = {
-                            navigator.navigate(AddPostScreenDestination(post = null))
-                        }
-                    )
-                    ConsumrzActionIconButton(
                         imageVector = Icons.Filled.Logout,
                         contentDescription = stringResource(R.string.logout),
                         onClick = {
                             viewModel.logout()
                         }
                     )
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(
+                shape = MaterialTheme.shapes.large.copy(CornerSize(percent = 50)),
+                containerColor = PurpleBg,
+                contentColor = Color.White,
+                onClick = {
+                    navigator.navigate(AddPostScreenDestination(post = null))
+                }) {
+                Icon(Icons.Default.Add, contentDescription = null)
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End, // FabPosition.Center
     ) { paddingValues ->
         if (loaderState.isLoading) {
             Column {
@@ -229,12 +236,14 @@ fun PostItem(
                 Text(
                     text = post.title,
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.align(Alignment.CenterVertically).weight(1f, fill = false),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f, fill = false),
                     textAlign = TextAlign.Start,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if(post.enableModify) {
+                if (post.enableModify) {
                     Row(
                         horizontalArrangement = Arrangement.End,
                     ) {
@@ -259,7 +268,9 @@ fun PostItem(
             Text(
                 text = post.text,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.align(Alignment.Start).padding(vertical = 4.dp),
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(vertical = 4.dp),
                 maxLines = 5,
                 overflow = TextOverflow.Ellipsis
             )
@@ -269,66 +280,13 @@ fun PostItem(
 
 @Preview(showBackground = true)
 @Composable
-fun PostsPreview() {
+fun PostsScreenPreview() {
     ConsumrzTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            //PostsScreen(EmptyDestinationsNavigator)
-            Card(
-                border = BorderStroke(1.dp, Color.Black),
-                colors = CardDefaults.cardColors(containerColor = Transparent),
-                //modifier = modifier,
-                shape = RectangleShape
-            ) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "post.titlehgjhgjhggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.align(Alignment.CenterVertically).weight(1f, fill = false),
-                            textAlign = TextAlign.Center,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                        ) {
-                            ConsumrzActionIconButton(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = stringResource(R.string.edit),
-                                onClick = {
-                                    //navigator.navigate(AddPostScreenDestination(post = post))
-                                }
-                            )
-                            ConsumrzActionIconButton(
-                                imageVector = Icons.Filled.Delete,
-                                contentDescription = stringResource(R.string.delete),
-                                onClick = {
-                                    //viewModel.deletePost(post = post)
-                                }
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.size(4.dp))
-                    Text(
-                        text = "post.text",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.align(Alignment.Start).padding(vertical = 4.dp)
-                    )
-                }
-            }
+            PostsScreen(navigator = EmptyDestinationsNavigator)
         }
     }
 }

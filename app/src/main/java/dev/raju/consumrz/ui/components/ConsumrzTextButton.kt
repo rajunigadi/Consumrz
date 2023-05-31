@@ -15,9 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import dev.raju.consumrz.ui.theme.PurpleBg
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
 @Composable
 fun ConsumrzTextButton(
     text: String,

@@ -23,10 +23,6 @@ class AuthPreferences(
         return Result.runCatching {
             val flow = dataStore.data
                 .catch { exception ->
-                    /*
-                     * dataStore.data throws an IOException when an error
-                     * is encountered when reading data
-                     */
                     if (exception is IOException) {
                         emit(emptyPreferences())
                     } else {
@@ -34,10 +30,9 @@ class AuthPreferences(
                     }
                 }
                 .map { preferences ->
-                    // Get our name value, defaulting to false if not set
                     preferences[AUTH_KEY]
                 }
-            val value = flow.firstOrNull() ?: "" // we only care about the 1st value
+            val value = flow.firstOrNull() ?: ""
             value
         }
     }

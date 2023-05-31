@@ -26,9 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import dev.raju.consumrz.R
 import dev.raju.consumrz.utils.TextFieldState
 
-/**
- * Created by Rajashekhar Vanahalli on 31 May, 2023
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConsumrzPasswordTextField(
@@ -50,7 +47,6 @@ fun ConsumrzPasswordTextField(
         },
         onValueChange = {
             onValueChanged.invoke(it)
-            //viewModel.setFirstName(it)
         },
         placeholder = {
             Text(text = placeholderText)

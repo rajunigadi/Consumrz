@@ -17,9 +17,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * Created by Rajashekhar Vanahalli on 30 May, 2023
- */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
