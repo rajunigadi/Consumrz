@@ -72,7 +72,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class,
     ExperimentalComposeUiApi::class
 )
 @Destination
@@ -188,12 +189,15 @@ fun PostDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val commentText = if(comments.isNotEmpty()) {
-                            pluralStringResource(id = R.plurals.total_comments, count = comments.size, comments.size)
+                        val commentText = if (comments.isNotEmpty()) {
+                            pluralStringResource(
+                                id = R.plurals.total_comments,
+                                count = comments.size,
+                                comments.size
+                            )
                         } else {
                             stringResource(id = R.string.comments)
                         }
-                        Log.d("aarna", "commentText: $commentText")
                         Text(
                             text = commentText,
                             style = MaterialTheme.typography.titleLarge,
