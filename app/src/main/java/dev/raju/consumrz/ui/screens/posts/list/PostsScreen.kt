@@ -35,6 +35,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
@@ -67,7 +71,9 @@ import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.LoginScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.PostDetailScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
+import dev.raju.consumrz.ui.theme.ColorBg
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
+import dev.raju.consumrz.ui.theme.Purple700
 import dev.raju.consumrz.ui.theme.PurpleBg
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
@@ -216,10 +222,9 @@ fun PostItem(
     modifier: Modifier
 ) {
     Card(
-        border = BorderStroke(1.dp, Color.Black),
-        colors = CardDefaults.cardColors(containerColor = Transparent),
+        colors = CardDefaults.cardColors(containerColor = ColorBg),
         modifier = modifier,
-        shape = RectangleShape
+        elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Column(
             Modifier
