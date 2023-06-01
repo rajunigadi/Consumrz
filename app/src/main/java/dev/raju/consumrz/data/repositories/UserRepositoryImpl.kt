@@ -30,11 +30,16 @@ class UserRepositoryImpl(
     override suspend fun login(loginRequest: AuthRequest): Resource<Unit> {
         return try {
             val users = userDao.findUserByEmail(email = loginRequest.email)
-            if ((users?.isNotEmpty() == true) && (users[0].email == loginRequest.email)) {
-                preferences.saveEmail(users[0].email)
-                Resource.Success(Unit)
+            if (users?.isNotEmpty() == true) {
+                val user = users[0]
+                if (user.email == loginRequest.email && user.password == loginRequest.password) {
+                    preferences.saveEmail(user.email)
+                    Resource.Success(Unit)
+                } else {
+                    Resource.Error("Email or password are wrong")
+                }
             } else {
-                Resource.Error("Unable to sign in with user credentials")
+                Resource.Error("User not found, please sign up")
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
@@ -56,17 +61,31 @@ class UserRepositoryImpl(
 
     override suspend fun register(user: User): Resource<Unit> {
         return try {
-            val rowId = userDao.addUser(user)
-            if(rowId > 0) {
-                preferences.saveEmail(user.email)
-                Resource.Success(Unit)
+            val existingUser = findUserByEmail(user.email)
+            if(existingUser == null) {
+                val rowId = userDao.addUser(user)
+                if (rowId > 0) {
+                    preferences.saveEmail(user.email)
+                    Resource.Success(Unit)
+                } else {
+                    Resource.Error("Unable to register with user credentials")
+                }
             } else {
-                Resource.Error("Unable to register with user credentials")
+                Resource.Error("User is already registered with email: ${user.email}")
             }
         } catch (e: IOException) {
             Resource.Error("${e.message}")
         } catch (e: Exception) {
             Resource.Error("${e.message}")
+        }
+    }
+
+    private suspend fun findUserByEmail(email: String): User? {
+        val users = userDao.findUserByEmail(email = email)
+        return if ((users?.isNotEmpty() == true) && (users[0].email == email)) {
+            users[0]
+        } else {
+            null
         }
     }
 }
