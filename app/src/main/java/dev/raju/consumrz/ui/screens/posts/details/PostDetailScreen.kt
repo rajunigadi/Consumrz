@@ -1,6 +1,7 @@
 package dev.raju.consumrz.ui.screens.posts.details
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,9 +42,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,13 +65,16 @@ import dev.raju.consumrz.ui.components.ConsumrzActionIconButton
 import dev.raju.consumrz.ui.screens.destinations.AddCommentScreenDestination
 import dev.raju.consumrz.ui.screens.destinations.AddPostScreenDestination
 import dev.raju.consumrz.ui.screens.posts.PostsViewModel
+import dev.raju.consumrz.ui.theme.ColorBg
 import dev.raju.consumrz.ui.theme.ConsumrzTheme
 import dev.raju.consumrz.utils.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLifecycleComposeApi::class,
+    ExperimentalComposeUiApi::class
+)
 @Destination
 @Composable
 fun PostDetailScreen(
@@ -182,8 +188,14 @@ fun PostDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        val commentText = if(comments.isNotEmpty()) {
+                            pluralStringResource(id = R.plurals.total_comments, count = comments.size, comments.size)
+                        } else {
+                            stringResource(id = R.string.comments)
+                        }
+                        Log.d("aarna", "commentText: $commentText")
                         Text(
-                            text = stringResource(id = R.string.comments),
+                            text = commentText,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(2.dp)
                         )
@@ -205,7 +217,7 @@ fun PostDetailScreen(
                         }
                     }
 
-                    if (comments.isNullOrEmpty()) {
+                    if (comments.isEmpty()) {
                         Column(
                             Modifier
                                 .fillMaxSize(),
@@ -267,10 +279,9 @@ fun CommentItem(
     modifier: Modifier
 ) {
     Card(
-        border = BorderStroke(1.dp, Color.Black),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        colors = CardDefaults.cardColors(containerColor = ColorBg),
         modifier = modifier,
-        shape = RectangleShape
+        elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Column(
             Modifier
