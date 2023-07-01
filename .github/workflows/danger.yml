@@ -3,8 +3,8 @@ name: 🚧 Danger
 on:
   push:
     branches: develop
-  pull_request:
-      branches: develop
+  #  pull_request:
+  #    branches: develop
 
 jobs:
   lint:
@@ -48,9 +48,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - run: |
-          curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.44.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
       - name: Fetch all tags
         run: git fetch --prune --unshallow --tags
