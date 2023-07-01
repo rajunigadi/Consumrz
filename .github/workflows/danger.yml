@@ -74,7 +74,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run ktlint
-        uses: ./gradlew ktlintCheck
+        uses: ./gradlew build ktlintCheck
 
   build:
     needs: [lint, ktlint]
