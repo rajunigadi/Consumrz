@@ -40,8 +40,8 @@ jobs:
       - name: Run lint
         run: ./gradlew lint
 
-      - name: Run ktlintCheck
-        uses: ./gradlew lint
+      - name: Run ktlint
+        uses: ./gradlew ktlintCheck
 
   build:
     needs: lints
