@@ -17,7 +17,11 @@ allprojects {
     // Optionally configure plugin
     ktlint {
         debug.set(true)
-        // disabledRules.set(["no-wildcard-imports"])
+        disabledRules.set(setOf("no-wildcard-imports"))
+        reporters {
+            reporter(ReporterType.PLAIN)
+            reporter(ReporterType.CHECKSTYLE)
+        }
     }
 }
 
