@@ -43,8 +43,6 @@ jobs:
 
       - name: Run lint
         run: ./gradlew lint
-        with:
-          path: app/build/reports/lint-results-debug.xml
 
       - name: Upload reports
         uses: actions/upload-artifact@v1
