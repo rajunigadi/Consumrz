@@ -66,4 +66,6 @@
         <item quantity="other">%d Comments</item>
     </plurals>
 
+    <string name="unused">Unused</string>
+
 </resources>
