@@ -3,7 +3,7 @@ name: 🚧 Danger
 on:
   push:
     branches: develop
-    pull_request:
+  pull_request:
       branches: develop
 
 jobs:
