@@ -1,4 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -7,7 +8,19 @@ plugins {
     id("org.jetbrains.kotlin.android").version ("1.6.10").apply(false)
     id("com.google.dagger.hilt.android").version("2.44").apply(false)
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
+    id("org.jlleitschuh.gradle.ktlint").version("10.1.0")
 }
+
+allprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    // Optionally configure plugin
+    ktlint {
+        debug.set(true)
+        // disabledRules.set(["no-wildcard-imports"])
+    }
+}
+
 
 tasks.register<Detekt>("detektAll") {
     val configFile = file("${rootProject.rootDir}/configs/detekt/default_detekt.yml")
