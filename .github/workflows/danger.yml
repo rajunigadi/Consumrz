@@ -43,18 +43,8 @@ jobs:
       - name: Run ktlintCheck
         uses: ./gradlew lint
 
-  detekt:
-    ## 4
-    runs-on: ubuntu-latest
-    steps:
-      - name: "checkout"
-        uses: actions/checkout@v3
-      - name: "detekt"
-        uses: natiginfo/action-detekt-all@1.20.0
-        with:
-          args: --config configs/detekt/default_detekt.yml
-
   build:
+    needs: lints
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
