@@ -20,10 +20,7 @@ jobs:
 
   debugBuild:
     needs: detekt
-
-    name: Generate builds
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -63,10 +60,10 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
 
   releaseBuild:
-    name: Generate App Bundle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -74,7 +71,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
       - name:
-          run: chmod +x gradlew
+        run: chmod +x gradlew
       - name: Bundle 'release' with Gradle
         run: ./gradlew bundleRelease
       - name: Sign AAB
