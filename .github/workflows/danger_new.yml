@@ -26,7 +26,7 @@ jobs:
         continue-on-error: false # If annotations contain error of severity, action-android-lint exit 1.
 
   build:
-    needs: [lint]
+    needs: [android-lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
