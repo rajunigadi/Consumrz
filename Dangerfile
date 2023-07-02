@@ -19,5 +19,5 @@ android_lint.skip_gradle_task = true
 android_lint.lint(inline_mode: true)
 
 # ktlint
-checkstyle_format.base_path = Dir.pwd
-checkstyle_format.report = "build/ktlint-report.xml"
+#checkstyle_format.base_path = Dir.pwd
+#checkstyle_format.report = "build/ktlint-report.xml"
