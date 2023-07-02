@@ -71,7 +71,7 @@ fun SplashScreen(
     ) {
         if (loaderState.isLoading) {
             Column(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
