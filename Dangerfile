@@ -13,7 +13,7 @@ warn('PR is classed as Work in Progress') if github.pr_title.include? '[WIP]'
 #end
 
 # android lints
-android_lint.report_file = "**/reports/lint-results-debug.xml"
+android_lint.report_file = "build/reports/*.xml"
 android_lint.filtering = true
 android_lint.skip_gradle_task = true
 android_lint.lint(inline_mode: true)
