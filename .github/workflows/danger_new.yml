@@ -7,9 +7,7 @@ on:
       branches: develop
 
 jobs:
-
   lint:
-    name: Run lint checks
     runs-on: ubuntu-latest
 
     steps:
@@ -45,14 +43,17 @@ jobs:
   ktlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: |
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install ktlint
+        run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.44.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
-      - name: run ktlint
+      - name: Run ktlint
         run: |
           ktlint --reporter=checkstyle, output=build/ktlint-report.xml
         continue-on-error: true
-      - uses: yutailang0119/action-ktlint@v3
+      - name: Action ktlint
+        uses: yutailang0119/action-ktlint@v3
         with:
           report-path: build/*.xml # Support glob patterns by https://www.npmjs.com/package/@actions/glob
         continue-on-error: false # If annotations contain error of severity, action-ktlint exit 1.
@@ -61,14 +62,15 @@ jobs:
     needs: [lint, ktlint]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Set up Ruby 3.2.2
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      #- run: bundle exec rake
-      - uses: actions/cache@v1
+      - name: Cache bundle
+        uses: actions/cache@v1
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
