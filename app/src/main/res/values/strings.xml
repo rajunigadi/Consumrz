@@ -67,5 +67,6 @@
     </plurals>
 
     <string name="unused">Unused</string>
+    <string name="songs_count">%1d songs</string>
 
 </resources>
